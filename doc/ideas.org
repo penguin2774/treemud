@@ -1,0 +1,238 @@
+* A scratchpad for ideas
+* Classes (primary)
+1. Fighter
+2. Rogue
+3. Cleric
+4. Wizard
+5. Psion- RP point requirement (denoted by :RP:)
+
+* secondary classes
+1. Barbarian, Fighter, Paladin, Bladesinger :RP:, Ranger
+2. Thief, Bard, Scout
+3. Cleric, Favored soul :RP:, Druid, Shaman 
+4. Mage, Invoker, Necromancer, Transmuter, Abjurer, Conjurer, Enchanter, Diviner, Illusion Sorcerer
+5. :RP: Psion, Soule knife, Wilder 
+
+* Prestige Classes
+1. Blackguard, Weaponsmaster
+2. Assassine, Arcane Archer, Spell Thief, Shadowdancer, Duelist
+3. Stormlord, Warpriest, Divine Oracle
+4. Archmage, Hedgewizard, Wild Mage
+
+* Races
+1. Human 
+2. Elf 
+   1. Averial
+   2. Sun
+   3. High
+   4. Moon
+   5. Drow
+   6. HYalfelf
+3. Dwarf
+   1. Stone
+   2. Duregur
+   3. Shield
+4. Gnome
+   1. Deep
+   2. Forest
+   3. Rock
+5. Orc
+   1. Halforc
+   2. Grey
+   3. Red
+6. Halfling
+   1. Lightfoot
+   2. Strongheart
+7. Planetouched
+   1. Genasi
+   2. Aasimar
+   3. Tiefling
+8. Draconic
+   1. Half-Dragon
+   2. Kobold
+   3. Dragonborn
+9. Goblin
+   1. Hobgoblin
+   2. Goblin
+   3. Bugbear 
+10. Other
+   1. Minataur
+   2. Centaur
+   3. Gnoll
+   4. Were-creatures (inflicted only) - Tiger, Wolf, Bear, Rat, Raven
+   5. Changling
+
+* Wearlocations
+  When listing equipment dont show none used wear locs.
+1. Head
+   1. Outer
+   2. Under
+      1. Face
+	 1. Nose
+	 2. Mouth
+	 3. Eyes
+      2. Ears
+2. Neck
+   1. Up to 10, only 2 work.
+3. Shoulders
+4. Torso/Body
+   1. Outer
+   2. Inner
+   3. Over
+5. Arms
+   1. Forearms
+   2. Wrist left
+   3. Wrist right
+6. Hands
+   1. Fingers
+      1. Up to 10 rings, only 2 work
+7. Belt-location
+   1. Up to 4 belt-slots
+   2. Buckle
+8. Legs
+   1. Outer
+   2. Under
+9. Feet
+    1. Outer
+    2. Under
+
+       
+* Weapons
+1. Sword
+   1. Longsword   
+   2. Shortsword
+   3. Greatsword
+   4. Falcion
+   5. Scimitar
+   6. Two-bladed Sword
+   7. Rapier
+   8. Bastard sword
+   9. Flabirge
+2. Dagger
+   1. Sword-breaker
+   2. Dgger
+   3. Stiletto
+   4. Dirk
+3. Mace
+   1. Footman's
+   2. Light
+   3. Heavy
+   4. Flanged
+4. Flail
+   1. Dire Flail
+   2. Heavy flail
+   3. Multi-headed flail
+5. Morning Star
+6. Unarmed
+   1. Punching dagger
+   2. Gauntlet
+   3. Knukcles
+   4. Cestus
+   5. Claws
+7. Scyth
+   1. Sicles
+   2. Scyth
+8. Club
+   1. Spiked
+   2. Banded
+   3. Natural
+   4. Greatclub
+9. Spears
+    1. Short 
+    2. Long
+    3. Trident
+10. Axes
+    1. Great
+    2. Two-handed
+    3. Hand axe
+    4. Bearded
+    5. Double-axe
+    6. Urgosh
+11. Improvised
+    1. Rocks
+12. Polearms
+    1. Glaive
+    2. Guisarm
+    3. Lance
+    4. Halberd
+13. Whip
+    1. Bull whip
+    2. Short whip
+    3. Scourge
+    4. Cat-o-nine
+    5. Crop
+14. Chain-weapons
+    1. Heavy chain
+    2. Spiked chain
+    3. Gladiator net
+15. Staves
+    1. quarterstaff
+    2. Half-staff
+    3. Full staff
+    4. Spiked staff
+    5. Staff-Blade
+16. Hammers
+    1. Picks
+    2. Warhammer
+    3. Double-headed Warhammer
+    4. Heavy Hammer
+
+* Ranged weapons
+1. Bow
+   1. Longbow
+      1. Composit
+   2. Shortbow
+      1. Composit
+2. Crossbow
+   1. Hand Crossbow
+   2. Repeating Crossbow
+   3. Heavy Crossbow
+3. Slings
+4. Thrown Weapons
+   1. Dagger
+   2. Dirk
+   3. Javelin
+   4. Shirukens
+   5. Pins
+   6. Darts
+5. Improvised
+   1  Rocks 
+
+* Mud-Admins
+1. Deities
+2. RP facilitators
+3. Builders
+4. Coder(s)
+
+* Trades 
+1. Carpentry
+2. Lapidary
+3. Fletching
+4. Farming
+5. Cooking
+6. Smithing
+7. Alchemy 
+8. Trapsmithing
+9. Magic-item-creation
+10. Pottery
+11. Tailor
+
+* Room Properties
+Exits
+Lighting
+Weather
+Indoors/Outdoors
+Secondary/Tirtiary Rooms Descs
+Destroyable
+Wilderness/Area
+Scale/Size (passage timing)
+Teleport-able
+Vehicle
+
+* Dream Features
+Mobs as boats w/ attached locational scripting 
+
+Room sub-locations
+
+
+

@@ -1,0 +1,19 @@
+
+{:type :room
+ :vname peaceful.grassy-field
+ :name "A grassy field"
+ :desc "You see a grassy field expand in all directions before you."
+ :exits {"north" void.start}}
+
+
+{:type :item
+ :vname peaceful.acorn
+ :name "acorn"
+ :short "a tiny acorn"
+ :long "A tiny acorn sits here."}
+
+{:type :item
+ :vname peaceful.oak-tree
+ :name "tree"
+ :short "a tall oak tree"
+ :long "A tall oak tree stands here."}

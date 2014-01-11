@@ -1,0 +1,9 @@
+* world
+** map
+** history
+** politics
+** religion
+* game design
+** spells
+** skills
+** wear-locs

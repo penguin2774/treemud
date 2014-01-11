@@ -1,0 +1,64 @@
+* treemud
+** act
+   Act(tions) are things that are initiated in the world. Functions to
+   cause actions are kept in this file.
+   Actions are responsable for:
+   1. basic sanity checking,
+   2. calling world changing functions
+   3. and sending out result events
+** event
+   Events are information nugets that are send out to mobiles in a
+   room (or wider area) when an action is taken or somthing happens.
+   there are two parts to events, the events themselves and the
+   informer functions that inform the PC or AI (including formatting
+   the result into a message.) of the event.
+   Events are always in the form [observer #^Keyword event cause &
+   args] and initiated by the (tell) function.
+   The events themselves are handled by a multimethod called event.
+   methods of this event are dispatched around [(keyword) event
+   (object-type) type of observer].  If observer = cause then the
+   event is happening to the caller. Otherwise its someone else
+   observing the event in the location.
+   
+** command
+   At the base the command parser exists. In the directory all the
+   commands to call actions or just perform informational grabs
+   (if in character, then they are actions too.). Commands that cause
+   in game actions are usuly simply stubs for action functions
+   (collect args, fail if not present, otherwise call action and
+   return) most after action results are stringed by the event informer.
+** server
+   The server is the location of the main function which launches the
+   server socket and starts listening for connections. it also moves
+   new connections from nanny to account and finaly to command as they
+   get further access.
+** world
+   Contains the functions for world manipulation as well as loading
+   area files. It also contains the centeral world hash.
+   
+*** *the-world* hash
+    Contains all rooms, mobiles and items in the world.
+    Each object has a unique vname that it is referenced by in any
+    other location, such as :contents sets.
+    At startup the mud loads all the area files in 'areas/'.
+    The rooms are used immediately, where items and mobiles are
+    intended to be used for cloning via resets. 
+    
+    When players load there PCs, the file contains any items the
+    player wishes to persist between mud reboots. This includes their
+    inventory. 
+    
+    Its very important that vnames do not collied as the world is
+    simply a clojure hashmap and any collisions will cause items to
+    replace other items existing in the world. 
+    For example, if a item is instanced :peaceful.acorn#1132 and a
+    player already had :peaceful.acorn#1132 then when they load after 
+    
+** nanny
+   Contains the login prompt and banner. also the account making functions.
+** account
+   Contains the account managment menu as well as all the account
+   creation and managment functions.
+   
+** utils
+   Holds all the utility files such as color

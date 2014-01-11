@@ -1,0 +1,1002 @@
+#+TODO: CODE TEST BUG | DONE 
+
+* DONE Basics foundation
+** DONE server
+   The server is the location of the main function which launches the
+   server socket and starts listening for connections. it also moves
+   new connections from nanny to account and finaly to command as they
+   get further access.
+** DONE nanny
+   Contains the login prompt and banner. also the account making functions.
+** DONE account
+   Contains the account managment menu as well as all the account
+   creation and managment functions.
+   
+** DONE utils
+   Holds all the utility files such as color
+** DONE command
+   At the base the command parser exists. In the directory all the
+   commands to call actions or just perform informational grabs
+   (if in character, then they are actions too.). Commands that cause
+   in game actions are usuly simply stubs for action functions
+   (collect args, fail if not present, otherwise call action and
+   return) most after action results are stringed by the event informer.
+** DONE event
+   Events are information nugets that are send out to mobiles in a
+   room (or wider area) when an action is taken or somthing happens.
+   Each event is initiated (usualy by an act/x function)
+   by calling event/act with the target cause and event keyword, plus
+   any relevent args. The target, or each object in the room with
+   a :soul function is called with the data. Which produces output or
+   some kind of AI response.
+** DONE world
+   Contains the functions for world manipulation as well as loading
+   area files. It also contains the centeral world hash.
+** DONE act
+   Act(tions) are things that are done to the world by something or
+   someone. Functions to cause actions are kept in this file.
+   Actions are responsable for:
+   1. basic sanity checking,
+   2. calling world changing functions (found in world/change)
+   3. and sending out result events
+* CODE Basic Commands
+** Senses/Info
+*** DONE look
+*** DONE look <object>
+*** CODE look in <object>/examin <object>
+*** CODE look <direction>
+lets you look down a hallway ext.
+shows mobiles in a direction up to 4 rooms away
+nearby 1
+far 3
+vary far 4
+*** CODE weather
+Syntax: weather
+
+WEATHER shows the current game weather.  You must be in an outside room
+to see the weather.
+**** example
+As you check the weather around you, you notice:
+The snow is coming down hard.
+There are a few scattered clouds in the sky.
+The air feels perfect against your skin.
+A gale force wind is tearing through the air from the southwest.
+It's cold.
+*** CODE time
+Syntax: time
+
+TIME shows the game time, as well as the time the mud was last started,
+and the current local time for the host computer.
+**** Example
+It is 6 o'clock am, Day of the Bull, 30th day in the Month of Nature.
+It is the season of summer, in the year 622.
+The mud started up at  :   Wed Oct 20 14:29:13 2010
+
+The system time        :   Wed Oct 20, 2010 3:02:27 PM EDT
+Your local time        :   Wed Oct 20, 2010 8:02:27 AM Eniwetok
+** Movement
+*** DONE n s e w ect.
+*** CODE enter/leave
+Syntax:  enter <loc name>
+Syntax:  leave
+ 
+In rooms either 'somewhere' exits or exits responding only to keywords,
+you can simply type 'enter' or 'leave' to pass through that exit.
+ 
+The most common use of this is with portals cast by mages.  To use the
+portal, simply type 'enter' on either side of it and you will pass
+through to the other side.
+
+*** CODE drag
+Syntax:  drag  <character> <direction>
+
+config: drag premissions 
+Drag will drag the victim in the specified direction if they are not
+standing up.
+ 
+Deadly characters can drag any other deadly character who is not standing
+up, as long as the victim is within the 5-level pkill range.
+ 
+Peaceful characters can drag other peaceful characters only if the target
+is stunned, incapacitated or worse.  Peaceful characters cannot drag any
+deadly character at any time.  Peacefuls can use 'config +/- drag' to
+prevent others from dragging them if they wish.
+ 
+You cannot drag a character into a death trap, or if either you or they
+are under attack.
+ 
+** Object manipulation
+*** CODE get/put/drop/give [75%]
+Help level: 0
+Syntax:  drop <object>
+         drop <amount>  coins
+Syntax:  get  <object>
+         get  <object>  <container>
+Syntax:  give <object>  <character>
+         give <amount>  coins <character>
+Syntax:  put  <object>  <container>
+Syntax:  get/put/drop   <# amount>  <object>
+Syntax:  get/put        <# amount>  <object> <container>
+ 
+DROP drops an object, or some coins, on the ground.
+ 
+GET takes an object, either lying on the ground, or from a container, or
+even from a corpse (TAKE is a synonym for get).
+ 
+GIVE gives an object, or some coins, to another character.
+ 
+PUT puts an object into a container.
+ 
+Use 'drop/get/put all' to reference all objects present.
+Use 'drop/get/put all.<object>' to reference all objects of the same name.
+**** DONE get
+**** DONE drop
+**** CODE put
+**** DONE give
+*** CODE empty
+Syntax:  empty <container>
+Syntax:  empty <container> <container>
+ 
+This command allows you to empty a container of its contents.
+ 
+Use 'empty <container>' to dump the contents to the ground.
+ 
+Use 'empty <container> <container>' will empty the contents of the
+first container into the second container.
+*** CODE brandish/quaff/recite/zap
+Syntax:  brandish                       (to invoke a staff)
+Syntax:  quaff/drink  <potion>                (to quaff potions)
+         quaff/drink  <potion> <container>    (quaff directly from container)
+Syntax:  recite <scroll> <target>       (to recite a scroll)
+Syntax:  zap    <target>                (to use a wand on a target)
+ 
+BRANDISH invokes a magical staff.
+ 
+QUAFF quaffs a potion (as opposed to DRINK, which drinks mundane liquids).
+ 
+RECITE recites a magical scroll; the <target> is optional, depending on the
+nature of the scroll.
+ 
+ZAP fires a magical wand at a target.  If the target is not specified, and
+you are fighting someone, then that character is used for a target.
+ 
+You must be holding a wand or a staff before using BRANDISH or ZAP.
+ 
+All of these commands use up their objects:  Potions and scrolls have a
+single charge.  Wands and staves (staffs) have multiple charges.  When a
+magical object has no more charges, it will be consumed.  Use the spell
+'identify' to see the remaining charges.
+ 
+*** CODE eat/drink
+Syntax:  drink <object>                  (drink liquid from a drink container)
+Syntax:  eat   <object>                  (eat food or a magical pill)
+
+ 
+Drink instructs your character to drink from a fountain or a drink container
+to alleviate thirst.
+ 
+Eat instructs your character to eat an item of food or a magical pill (which
+function in a similar fashion as potions); pills do not fill stomach space.
+ 
+When you are hungry or thirsty (you will see messages at each tick that
+tell you if you are starving or dying of thirst, and can check your
+current state with either 'score' or 'oldscore'), you will not regain
+hitpoints, movement points or mana back as rapidly as if you were well
+fed and hydrated.
+ 
+If you stay hungry or thirsty too long and you are not an Avatar, your
+mental state will begin to suffer.  Your combat skills will be affected,
+your coordination will suffer and you may begin to either hallucinate or
+become depressed.  Eating, drinking and a little rest will solve this
+problem after a short period of time.
+
+*** CODE fill
+Syntax:  fill <drincon>
+Syntax:  fill <container>
+Syntax:  fill <pipe> <herb>
+ 
+FILL can be used with drink containers, regular containers or pipes.
+ - to fill a drink container, go to a fountain and 'fill <drinkcon>'
+ - to fill a container such as a backpack with items from the ground,
+   type 'fill <container>'
+ - to fill a pipe you must have both the pipe and the herb in your
+   inventory, then type 'fill <pipe> <herb>'
+ 
+*** CODE smoke
+You may 'smoke' a pipe after first filling it with a smokable herb or
+tobacco.
+
+*** CODE sacrifice
+Syntax:  sacrifice <object>
+
+Destroys object, and sends a message to imms (logged). 
+
+** Equipment/Inventory
+*** CODE wear/hold/wield/remove
+Syntax:  hold   <object>
+Syntax:  remove <object>
+Syntax:  remove all
+Syntax:  wear   <object>
+Syntax:  wear   all
+Syntax:  wield  <object>
+ 
+Three of these commands will cause you to take an object from your inventory
+and use it as equipment:
+ 
+HOLD is for lights, wands and staves; WEAR is for armor; WIELD is for weapons.
+ 
+You may not be able to HOLD, WEAR, or WIELD an item if its alignment does not
+match yours, if it is too heavy for you, or if you are not experienced enough
+to use it properly.
+ 
+WEAR ALL will attempt to HOLD/WEAR/WIELD each suitable item in inventory.
+ 
+REMOVE will take an object from your equipment and place it into inventory.
+ 
+REMOVE ALL will remove all your equipment and place it into inventory.
+
+*** CODE equipment
+Syntax: equipment
+
+EQUIPMENT lists your equipment (armor, weapons, and held items).
+*** DONE inventory
+Syntax: inventory
+
+INVENTORY lists your inventory.
+
+*** compare
+Syntax: compare <object-1> <object-2>
+Syntax: compare <object>
+
+COMPARE compares two objects in your inventory.  If both objects are weapons,
+it will report the one with the better average damage.  If both objects are
+armor, it will report the one with the better armor class.
+
+COMPARE with one argument compares an object in your inventory to the object
+you are currently wearing or wielding of the same type.
+
+COMPARE doesn't consider any special modifiers of the objects.
+
+** Shops/Auctions
+*** CODE list/buy/sell/value
+Syntax: buy   <object>
+Syntax: buy   <# of object> <object>
+Syntax: list
+Syntax: list  <object>
+Syntax: sell  <object>
+Syntax: value <object>
+ 
+BUY buys an object from a shop keeper.
+BUY <# of object> <object> will allow you to buy up to twenty of a normal
+store item at once.
+ 
+LIST lists the objects the shop keeper will sell you.  LIST <object> lists
+just the objects with that name.
+ 
+SELL sells an object to a shop keeper.
+ 
+VALUE asks the shop keeper how much he, she, or it will buy the item for.
+ 
+*** CODE appraise
+Syntax: appraise <item>
+        appraise all
+
+Note: also must be skill Mmmm....
+Appraise, when at a repairshop type mob, will tell you the condition of 
+your equipment in question.  The mob will tell you if it needs repair or 
+not, and if so, how much it will cost.
+ 
+** Position
+*** CODE stand/rest/sleep/wake
+Help level: 0
+Syntax:  rest
+Syntax:  sleep
+Syntax:  stand
+Syntax:  wake
+ 
+These commands change your position.
+ 
+When you REST or SLEEP, you regenerate hit points, mana points, and movement
+points at a much faster rate.  However, you are more vulnerable to attack,
+and if you SLEEP you won't hear many things happen.
+ 
+Use STAND or WAKE to come back to a standing position.  You can also WAKE
+other sleeping characters.
+ 
+SEE ALSO:  help 'sleep spell'
+*** CODE sit
+Syntax: sit
+
+Sit makes your character sit down.
+
+*** CODE kneel
+Same basic idea as sit.
+** Social
+*** DONE say
+*** DONE osay
+*** DONE emote
+*** CODE tell
+Syntax: tell  <character> <message>
+
+Amulets of communication, sending.
+TELL sends a message to one awake player anywhere in the world.
+
+*** CODE question/answer/ask
+Syntax: ask      <message>
+Syntax: question <message>
+Syntax: answer   <message>
+
+
+These commands send messages through communication channels to other players.
+
+CHAT, MUSIC, and QUESTION and ANSWER also send messages to all interested 
+players.  '.' is a synonym for CHAT.  The ASK and ANSWER commands 
+both use the same 'question' channel
+
+*** CODE yell/shout
+Syntax: yell/shout     <message>
+
+YELL sends a message to all awake players within your area.
+
+*** CODE languages/language
+Syntax: languages
+Syntax: train <language name>
+
+Languages alone shows which languages you know, and "language learn 
+<name>" will add to your percentage of language knowledge.  To learn a 
+language, a scholar who is knowledgable in that tongue must be present.
+
+If someone is speaking in a language, and you know it, you will 
+understand what they are saying.  However, to change the language in which 
+you are speaking, you must change that manually.  (See help on SPEAK).
+
+See also LANGUAGE , SPEAK
+
+** Reading/Writing
+*** note
+USAGE - 'note (command) [number or text]'
+   (command) can be any of the following:
+    List, Read, Write, Subject, To, Show, Post, Remove, Take, Date.
+   [number or text] can be left blank, be a number, or be words
+    depending on what (command) you use.  Usage is explained below.
+
+LIST - Lists the notes you can read. List [number] lists all the notes
+ including, and after [number]. You must be at a note board to List.
+ example: 'note list'    shows all notes on the board.
+          'note list 10' shows notes 10 and later on the board.
+
+READ - Displays the contents of [number]. You must be at a note board to
+ Read, and you must specify a [number].
+ example: 'note read 5' displays note #5.
+
+WRITE - Puts you in an editor where you can write a note. You must be
+ holding a note, and have a quill in your inventory to Write.
+ example: 'note write' puts you in the editor. See Help EDITOR.
+ 
+SUBJECT - Sets the subject line of a new note to [text]. You must be
+ holding a note, and have a quill in your inventory to set the Subject.
+ example: 'note subject Hello World!' sets Hello World! as the subject.
+
+TO - Sets the recipient(s) to [text]. ALL means all players. IMMORTAL
+ means all immortals. You must be holding a note, and have a quill.
+ example: 'note to Harakiem' sets Harakiem as the note's recipient.
+
+SHOW - displays a note you are holding.
+ example: 'note show' displays the note you're holding.
+
+POST - takes a note you're holding and posts it to the board you are at,
+ so others may read it.
+ example: 'note post' puts it on the board.
+
+REMOVE - erases note [number] from a note board. You must be at a note
+ board and be the note's author or an immortal to use Remove.
+ example: 'note remove 12' removes note #12, if you're its author.
+ 
+TAKE - similar to 'Remove' but places the note in your inventory, rather
+ than completely erasing it.
+ example: 'note take 10' moves note 10 to your inventory from the board.
+
+DATE - similar to 'list' but replaces who the message is to with the
+ date that the note was written.
+ 
+Also See Help note 
+
+*** read/write
+to be discused
+** Combat
+*** CODE kill/murder
+KILL MURDER
+Syntax:  kill     <character>
+Syntax:  murder   <character>   -- must be level 5 or higher to murder
+ 
+KILL starts a fight, and, hopefully, kills something.
+ 
+MURDER is used to initiate attacks on other player characters (WARNING:
+see 'laws pkill' for restrictions on attacking other players).  You must
+be level 5 or higher to be able to use the murder command.
+ 
+*** CODE retreat
+Syntax:  retreat
+Syntax:  retreat <value>
+Syntax:  retreat max
+ 
+This command sets your wimpy value.  When your character takes damage that
+reduces your hit points below your wimpy value, you will automatically
+attempt to flee.
+                                                      
+'Wimpy' by itself sets your wimpy to about 20% your maximum hitpoints.
+ 
+'Wimpy <value>' allows you to set your wimpy at a level you determine,
+but it cannot exceed about 75% of your maximum hitpoints.
+ 
+'Wimpy max' sets your wimpy at its maximum level for you.
+ 
+Some monsters are wimpy.
+ 
+See also FLEE
+
+*** CODE flee/rescue
+Syntax: flee
+Syntax: rescue   <character>
+
+Once you start a fight, you can't just walk away from it.  If the fight
+is not going well, you can attempt to FLEE, or another character can
+RESCUE you.
+
+If you lose your link during a fight, then your character will keep
+fighting, and will attempt to RECALL from time to time.  Your chances
+of making the recall are reduced, and you will lose much more experience.
+
+In order to RESCUE successfully, you must practice the appropriate skill.
+
+*** CODE shove
+Syntax:  shove <character> <direction>
+(bull rush) 
+Deadly characters can shove other deadly characters in the direction
+specified if the victim is standing up.
+ 
+Characters who have been in a safe room for longer than 30 seconds
+will be unable to be shoved or dragged out of that room until they
+either leave of their own choice or they shove/drag another player. 
+ 
+You cannot shove a character into a death trap, and cannot shove
+someone outside the 5-level pkill range.
+
+** Skills/Spells
+*** CODE cast
+Syntax: cast <spell> <target>
+
+Before you can cast a spell, you have to practice it.  The more you practice,
+the higher chance you have of success when casting.  Casting spells costs mana.
+The mana cost decreases as your level increases.
+
+The <target> is optional.  Many spells which need targets will use an
+appropriate default target, especially during combat.
+
+If the spell name is more than one word, then you must quote the spell name.
+Example: cast 'cure critic' frag.  Quoting is optional for single-word spells.
+You can abbreviate the spell name.
+
+When you cast an offensive spell, the victim usually gets a saving throw.
+The effect of the spell is reduced or eliminated if the victim makes the
+saving throw successfully.
+
+See also the help sections for individual spells.
+*** CODE skills
+Syntax:  skills
+Syntax:  skills <low level> <high level>
+
+
+Note: skill work as in dnd, you have ranks per level. Not based on use. 
+SLIST without an argument gives you a complete list of the spells and skills
+available to your class, also indicating the maximum level to which you can
+practice each.
+ 
+SLIST <low level> <high level> gives a list of spells and skills available
+to your class from the low level to the high level specified.
+ 
+Example:  slist 2 2
+ 
+    SPELL & SKILL LIST
+    ------------------
+    Level 2
+      skill :                mount   Current:  75 Max: 85 
+ 
+*** CODE spells
+spells lists spells you know (dont have to practice, you just cast them and they work, cool)
+
+*** CODE weap(on proficiencies)
+lists weapon proficiencies
+** Group
+*** CODE follow
+Syntax:  follow <character>
+ 
+'Follow' starts you following another character.  To stop following, type
+'follow self'.  You cannot follow those more than ten levels above you.
+ 
+You may follow lower level characters or characters up to ten levels higher.
+You must first follow someone before you can join their group.
+ 
+See also GROUP
+*** CODE group
+Syntax:  group <character>, group all, group, group disband
+ 
+'Group <character>' adds someone who is following you into your group, making
+them a group member.  Group members share experience from kills, and may use
+the GTELL and SPLIT commands.  If anyone in your group is attacked, you will
+automatically join the fight.
+ 
+If character is already a member of your group, 'group <character>' again to
+remove them from your party.  Removing the character from the group does not
+stop them from following you, however.  A character can also leave a group
+by using the 'follow self' command, in which case they will both leave your
+group and stop following you.
+ 
+'Group' with no argument shows statistics for each character in your group.
+ 
+'Group all' groups all eligible players following you in the room.
+ 
+'Group disband' allows the leader to disband his group (members will stop
+following and are ungrouped).
+ 
+You may group only characters within eight levels of your own.  See section
+10 of your Adventurer's Guide for more information on groups and grouping.
+*** CODE split
+Syntax: SPLIT <amount>
+
+SPLIT splits some gold between you and all the members of your
+group who are in the same room as you.  It's customary to SPLIT
+the gold after a kill.
+
+** Locks and Doors
+*** CODE open/close/lock/unlock/pick
+Question: Will doors be an item or an exit
+Syntax: open   <object|direction>
+Syntax: close  <object|direction>
+Syntax: lock   <object|direction>
+Syntax: unlock <object|direction>
+Syntax: pick   <object|direction>
+
+OPEN and CLOSE open and close an object or a door.
+LOCK and UNLOCK lock and unlock a closed object or door.  You must have
+the requisite key to LOCK or UNLOCK.
+PICK can open a lock without having the key.  In order to PICK successfully,
+you must practice the appropriate skill.
+ 
+** PC Info-config
+*** CODE description
+Syntax: description
+        bio
+
+The DESCRIPTION command puts you into an editor to edit your long character
+description (what people see when they look at you).
+The BIO command puts you into an editor to edit your personal bio: what
+people see when they check WHOIS on you.
+ 
+An Immortal can request you change your description or bio if it contains
+inappropriate material.  Do not use profanity, racial slurs, sexual comments,
+other players names (without their permission), or off-color remarks.  Refusal
+to change your bio, description, or title on Immortal request is grounds for
+loss of character privileges.
+
+** OOC info
+*** CODE areas
+Syntax:  areas
+Syntax:  areas old
+Syntax:  areas <low range> <hi range>
+
+[IMMS ONLY ]
+The 'areas' command displays an alphabetically sorted list of all areas
+within the game, together with the author and suggested level range of
+each area.  
+ 
+The 'areas old' command displays an unsorted list of all areas (the old
+style), as well as the author and suggested level range of each area.
+ 
+You can specify a level range to see a list of all areas with suggested
+ranges which encompass the argument.  This can be a little awkward as
+each area has a low and a high suggested range.  Suffice to say that if
+an area's level range matches even one level of the range you request,
+it will be displayed.
+ 
+Special thanks to Fireblade for design and coding of this restyled function.
+The Realms of Despair will provide a copy of areas built by individuals
+to that individual and no one else. To receive a copy of an area for use
+on other muds, you must contact that individual.
+
+*** CODE commands/socials
+Help level: 1
+Syntax:  commands <string>
+Syntax:  socials
+ 
+COMMANDS shows you all the (non-social) commands available to you.  If you
+include a string you see all available commands that begin with that string.
+ 
+SOCIALS shows you all the social commands available to you.
+(Special thanks to KaVir for mailing us lots of extra socials)
+ 
+See also EMOTE
+
+*** CODE level
+Syntax:  level
+ 
+Your character advances in power by gaining experience.  Type LEVEL to see
+how many experience points you'll need for the next few levels.
+ 
+You gain experience by:
+    inflicting damage upon an opponent
+    being part of a group that kills an opponent
+    succeeding while learning a skill or a spell through real world usage
+ 
+You lose experience by:
+    fleeing from combat
+    recalling out of combat
+    being the target of some spells (energy drain, etc.)
+    dying
+ 
+The experience you get from a kill depends on several things:  how many 
+players are in your group; your level versus the level of the monster;
+your alignment versus the monster's alignment and some random variation.
+ 
+Your last 50 kills are recorded.  Each time you kill a creature that has
+been one of your last 50 kills you will receive less and less exp for it.
+(C)ontinue, (N)on-stop, (R)efresh, (B)ack, (Q)uit: [C] c
+The creature will also learn from its experience with you over time; if
+its intelligence is higher than your own it will begin to gain an
+advantage over you in combat.
+
+*** CODE score
+Syntax: score
+ 
+SCORE is a sheet filled with your characters statistics.  When you type
+score, only you can see what is listed there.  Should you want to let
+others see your characters health, you can type REPORT.  
+ 
+To get a breakdown of what each slot in your score means, read section 4
+in your Adventurer's Guide book.
+
+**** Example
+Score for Riecon the Attendant.
+----------------------------------------------------------------------------
+LEVEL: 65          Race : Elf               Played: 19 hours
+YEARS: 16          Class: Druid             Log In: Wed Oct 20 14:30:45 2010
+STR  : 10(10)    HitRoll: 1                 Saved:  Wed Oct 20 14:44:17 2010
+INT  : 15(14)    DamRoll: 0                 Time:   Wed Oct 20 14:49:55 2010
+WIS  : 17(16)      Armor: 0080, improper for adventure
+DEX  : 16(16)      Align: +0000, neutral          Items: 00000   (max 13000)
+CON  : 12(11)      Pos'n: standing               Weight: 00001 (max 1000000)
+CHA  : 16(16)      Wimpy: 0          Style: standard  
+LCK  : 12(12) 
+Glory: 0000(0000) 
+PRACT: 004         Hitpoints: 24    of    24   Pager: (X)  24    AutoExit(X)
+XP   : 2000             Mana: 145   of   145   MKills:  00000    AutoLoot( )
+GOLD : 10,000           Move: 110   of   110   Mdeaths: 00000    AutoSac ( )
+You feel fine.
+Languages: common elvish dwarven pixie ogre orcish trollese rodent insectoid mammal reptile dragon spiritual magical goblin god ancient halfling clan gith gnome 
+----------------------------------------------------------------------------
+IMMORTAL DATA:  Wizinvis [ ]  Wizlevel (65)
+Bamfin:  Riecon appears in a swirling mist.
+Bamfout: Riecon leaves in a swirling mist.
+
+*** CODE title
+Syntax:  title <string>
+
+Titles on the left, character set, titles on the right, imm set. 
+This command allows you to set your title the text of your choice.  The
+game supplies a title when your character is created and each time you
+advance a level.  
+ 
++  Must be level five or higher to use title
++  Titles are subject to the same guidelines for use of language as channels
+ 
+*** CODE who
+Help level: 1
+WHO shows the characters currently in the Realms.  Invisible characters will
+not appear on this list if you cannot detect invisible.  Immortals who are
+wizinvis higher than your own level also will not appear.
+ 
+Syntax:  who                 who <class>    who <class> race>
+         who <level range>   who deadly     who <class> <race> <level range>
+ 
+With arguments, WHO can show players of certain classes, races, or levels:
+For example:
+ 
+ who 10                  lists all characters level 10 or above
+ who 15 20               lists all characters between level 15 and 20
+ who cleric              lists all clerics playing
+ who cleric elf          lists all cleric elfs playing
+ who imm                 lists all Immortals playing
+ who cleric 1 5          lists all clerics between levels 1 and 5
+ who deadly              lists all deadly (pkill) characters playing
+ 
+NEW ADDITIONS:
+ who 'guild of mages'    lists all online members of the specified Guild
+ who <order name>        lists all online members of the specified Order
+ who <clan name>         lists all online members of the specified Clan
+
+*** mail
+Syntax: mail list
+Syntax: mail read    <number>
+Syntax: mail read    all
+Syntax: mail write
+Syntax: mail subject <string>
+Syntax: mail to      <to-list>
+Syntax: mail take    <number>
+Syntax: mail show
+Syntax: mail post
+Syntax: mail remove  <number>
+
+The mail command is very similar to the note command.  To write mail, as 
+in notes, you must have a blank note held in your hands, and a quill or 
+pen in your inventory.  Mail can only be addressed to real players, or 
+'all'.  There is a charge for reading and taking mail.
+
+To post mail to more than one party, use 'note to <name> <name> <name>', etc.
+Note that any of the named parties can remove the mail before the other
+parties get a chance to read it.
+
+See also 'HELP BOARDS', 'HELP NOTE'.
+
+** Feedback
+*** CODE bug/typo
+Help level: 0
+Syntax: bug <message>
+Syntax: typo <message>
+
+These commands will take your message and record it into a file as feedback
+to the mud implementors.
+
+* Spells
+OMG no mana, period
+** magic mirror
+Syntax: cast 'magic mirror' <name>
+   Lets you 'scry' into a room, seeing it as though you where looking based on a mobiles name, 
+returning a list of choices, with PCs at the top.
+** fly
+Syntax:  cast 'fly' <character>
+ 
+This spell enables the target character to fly.  It is useful in saving
+mv (movement points), preventing a character from falling when in the
+air, moving over water or through the air, and in preventing an opponent
+from tripping you.
+ 
+Some water areas require the use of fly to prevent damage from drowning.
+If you are in an area and your movement suddenly begins to drop, then you
+begin losing hps <hitpoints>, you should cast fly immediately.
+
+** float
+Syntax: cast 'float' <character>
+ 
+This spell enables the target character to float.  It is useful in saving
+mv (movement points), makes a character float slowly to the ground when
+falling from in the air, and allows you to move over water and through the
+air.
+ 
+Some water areas require the use of float to prevent damage from drowning.
+If you are in an area and your movement suddenly begins to drop, then you
+begin losing hps <hitpoints>, you should cast float immediately.
+
+* Skills
+** climb
+Autmatic
+ 
+This skill enables you to climb into and out of rooms that require it.
+
+** appraise
+When using value or apprase, returns the value your skill tells you its worth as well as the NPC's estimate.
+Also, value and apprase can be used outside of a shop, but just uses skill.
+** aid
+Syntax: aid <character>
+
+This skill allows you to bring a stunned person back into consciousness.
+
+** rescue
+Syntax: rescue   <character>
+
+Once you start a fight, you can't just walk away from it.  If the fight
+is not going well, you can attempt to FLEE, or another character can
+RESCUE you.
+
+If you lose your link during a fight, then your character will keep
+fighting, and will attempt to RECALL from time to time.  Your chances
+of making the recall are reduced, and you will lose much more experience.
+
+In order to RESCUE successfully, you must practice the appropriate skill.
+
+* Configs
+** Swim
+Config on whether or not to dive into water when moving.
+* Systems
+** death
+Corpse drops,
+you go to the relms of the dead.
+someone raises you, or 
+you can reincarnate (you suffer from death sickness, lo
+** damage
+When one character attacks another, the severity of the damage is shown
+in the verb used in the damage message.  Damage messages vary depending
+on weapon type, or what is inflicting the damage.  Escalating damage is
+indicated by the use of _ _ around the messages, regardless of weapon
+type.  Messages in all caps indicate even higher degrees of damage,
+while those surrounded by * * indicate the highest levels.
+ 
+The message shown will reflect the actual damage you are inflicting on
+(or receiving from) your opponent, and not a specific fixed amount.
+** resets
+   Every time the world is loaded, and after a certain period of
+   time, items in a rooms :reset set are cloned into the room, unless
+   one still exists in the room. 
+** tick
+1/year per real month (use calandar)
+Many of the actions in the Realms are based upon interval timers, including
+combat, most autonomous monster actions, hp/mana/move regeneration, spell
+duration, weather, and area resetting.
+ 
+Of these timers, the hp/mana/move regeneration timer is popularly called the
+'tick'.  Ticks in these Realms average 60 seconds of real time, but the
+actual amount varies randomly from 45 seconds to 75 seconds.
+ 
+Area resetting happens roughly every 3 minutes if there are no characters in
+in the area; less often (15 minutes) if any characters are present; Also,
+some lower level areas have shorter reset periods, while some higher level
+areas have longer reset periods.
+ 
+Note that objects lying on the ground will not be regenerated if anyone is
+in the area when it resets.
+ 
+Area resets are indicated by 'squeaking noises' or other messages just prior
+to the reset itself.
+
+** MOTD
+   Message of the day! (that thing that pops up at login that no one ever sets
+** weapons
+Weapons are the primary source of fighting power for most classes,
+especially at lower levels where other skills and spells remain
+unlearned. To use a weapon, simply 'wield <weapon name>'. You will
+hit more frequently with a weapon which is suited to your class, so
+choose your weapon wisely. For instance, mages use short blades at 95%
+efficiency. A mage wielding a long blade would hit his/her target less
+frequently, dependant upon the hitroll of the weapon in hand. Also, be
+sure to practice and adept your favored weapontype for best results.
+
+** config (account)
+*** ansi
+Syntax: ansi <on/off>
+
+The ansi command will either enable or disable ansi colour.  Ansi colour
+will work provided your terminal has a compatible mode.
+
+*** prompt
+Syntax:   prompt  <string>
+Syntax:   fprompt <string> (Meh)
+ 
+Sets your prompt to a given string.  The game automatically sets your prompt 
+when your character is created, but you can use PROMPT to change your prompt
+to more to your liking.  If you type 'default' as the string, your prompt
+will be set back to the game default.
+
+The fprompt sets your fighting prompt.  This is the prompt that is displayed
+to you while you are fighting.  It follows the same format as the normal
+prompt does.
+Your prompt can be any string of characters that you wish. You can also embed
+special characters and tokens into the string that you set. These special
+characters are linked with specific groups of tokens. These tokens will add
+specific sets of information to your prompt.
+ 
+The first special character is:  %
+Tokens for % are:
+  %h  - current hitpoints                
+  %H  - maximum hitpoints              
+  %v  - current movement                 
+  %x  - current experience
+  %A  - invisible/hide/sneak indicator 
+  
+The other special characters are:
+ &  - Foreground color
+ 
+Examples (assuming current hit points of 43, mana of 23, and movement of 120):
+Prompt %h%m%v       =   4323120
+Prompt <%h|%m|%v>>> =   <43|23|120>>>
+Prompt %h %m %v     =   43 23 120
+ 
+Please see HELP PCOLORS for a list of the color tokens. If you are immortal,
+there are separate prompt options for your use. See HELP IMMPROMPT.
+
+** social
+(Meh)
+The following information is needed to create a social:
+Use sedit <social> [field] to set one of the fields:
+  CNoArg: response to character if no argument given
+  ONoArg: response to room if no argument given
+  CFound: Response to character if target is someone else
+  OFound: Response to room if target is someone else
+  VFound: Response to target if target is someone else
+  CAuto : Response to character if target is self
+  OAuto : Response to room if target is self
+Variables you can use are:
+  $n - Name of the user of the social.
+  $N - Name of the target of the social.
+  $m - him/her/it for the user the social.
+  $M - him/her/it for the target of the social.
+  $s - his/her/its for the user of the social.
+  $S - his/her/its for the targt of the social.
+  $e - he/she/it for the user of the social.
+  $E - he/she/it for the target of the social.
+ 
+** Councils?
+
+The following councils exist to administrate various areas of the mud:
+ 
+Council of Elders -- responsible for complete mud administration, with each
+                     member working independently in other areas as well.
+The Symposium     -- responsible for immortalization of avatars, mortal
+                     immortal communications, and idea/project management.
+Pkill Conclave    -- responsible for administration and development of the
+                     deadly combat system, clans and other pkill matters.
+Quest Council     -- responsible for creating, running and overseeing quests
+                     as well as evolution of the quest system itself.
+Newbie Council    -- primarily oversees concerns dealing with new, low-level
+                     characters (areas, equipment, etc.), this council also
+                     employs many mortals who assist new players in need.
+Code Council      -- responsible for all code-related matters
+Neophyte Council   -- Overseer of level 51-53 immortals and inactivity 
+                      demotions.
+See also HELP '<council name>' for further information.
+Typing <councils> <council name> will show membership numbers and a brief
+description of what the council does.
+*** counciltalk
+Syntax: counciltalk <message>
+Syntax: coun <message>
+ 
+The Counciltalk command will allow your message to be heard by other
+characters in your council, should you be a member of one.
+
+** Guilds
+Guilds are special organizations for each class within the realms. Belonging
+to a Guild has many advantages, such as gaining new knowledge of your class,
+making new friends in the Realms, exciting quests, the great feeling of 
+helping other players, and many other aspects of Guild life make being in a
+Guild a memorable experience.  Each Guild has its own separate headquarter
+with a healer, a practice room, a Guild store, and many other rooms that makes
+each Guild unique unto itself.
+ 
+Membership in a Guild is not something that is easily obtained, and you must
+be a law-abiding player.  Deadly players are not allowed to join Guilds.
+There are rules within each Guild, and along with these rules, you must
+follow the rules of this MUD.
+ 
+To gain entry into a Guild, you should speak with a leader of the Guild.  The
+leaders are those people who have the title <Leader>, <First> and <Second>.
+To find out who is on from a Guild, type "who 'Guild of *****'.  For example,
+if you are a Druid, and you wish to find out who is on from the Guild of 
+Druids, type "who 'Guild of Druids'", and you will be given a list of players
+that belong to the Guild.
+** Mental State
+Your mental state is your current frame of mind, and how clearly and
+realistically you view your surroundings.  Mental states can be affected
+by prolonged combat, hunger, thirst, or poison.  If you are affected by
+one of the above for a period of time, your mental state will begin to
+deteriorate, and you will not view your surroundings as they truly are.
+You may begin to hallucinate, or become too lethargic to function, and
+your general abilities will be affected.  In extreme cases you may
+collapse from exhaustion or enter a delirious coma.
+ 
+To restore your mental state, you may need to rest (resting and sleeping
+will speed your recovery), eat, cure whatever poison afflicts you, etc.
+Note that if you are malnourished your state will not improve, even with
+sleep, until you have fed and/or quenched your thirst.
+ 
+Your mental state is by the text line in 'score' which describes your state
+of mind (You feel great, etc.)  The 'group' display contains a less accurate
+reading of your and your group-mates' mentalstates as well.
+ 
+Note:  Changing your deity now affects your mental state.
+ 
+See also 'GROUP DISPLAY'
+
+* Rest
+
+
+
+
+

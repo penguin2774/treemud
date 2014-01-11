@@ -1,0 +1,10 @@
+
+
+{:vname void.start
+ :type :room
+ :name "A formless void"
+ :desc "You float in a formless void."
+ :exits {"south" peaceful.grassy-field}}
+
+
+       
