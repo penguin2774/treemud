@@ -212,6 +212,7 @@ Syntax:  sacrifice <object>
 Destroys object, and sends a message to imms (logged). 
 
 ** Equipment/Inventory
+*** CODE Persistent player inventory
 *** CODE wear/hold/wield/remove
 Syntax:  hold   <object>
 Syntax:  remove <object>
@@ -243,7 +244,6 @@ EQUIPMENT lists your equipment (armor, weapons, and held items).
 Syntax: inventory
 
 INVENTORY lists your inventory.
-
 *** compare
 Syntax: compare <object-1> <object-2>
 Syntax: compare <object>

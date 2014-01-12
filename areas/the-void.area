@@ -1,10 +1,16 @@
 
-
 {:vname void.start
  :type :room
  :name "A formless void"
  :desc "You float in a formless void."
- :exits {"south" peaceful.grassy-field}}
+ :exits {"east" void.trash
+         "south" peaceful.grassy-field}}
+
+{:vname void.trash
+ :type :room
+ :name "A formless void"
+ :desc "You float in a formless void."
+ :exits {"west" void.start}}
 
 
        

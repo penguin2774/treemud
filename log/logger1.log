@@ -530,3 +530,27 @@ java.lang.RuntimeException: obj is not in the same place as ch
 [2014-01-11 14:59:15,069][INFO][treemud.server] User connected from /127.0.0.1:43130.
 [2014-01-11 14:59:23,666][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:43130
 [2014-01-11 14:59:25,320][INFO][treemud.server] Character login Riecon from /127.0.0.1:43130
+[2014-01-12 03:54:45,291][INFO][treemud.server] User connected from /127.0.0.1:58502.
+[2014-01-12 03:55:46,184][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:58502
+[2014-01-12 03:55:48,452][INFO][treemud.server] Character login Riecon from /127.0.0.1:58502
+[2014-01-12 04:33:04,312][INFO][treemud.server] Character logout of Riecon from /127.0.0.1:58502
+[2014-01-12 04:33:04,312][INFO][treemud.server] Account logout of penguin2774 from /127.0.0.1:58502
+[2014-01-12 04:33:04,312][INFO][treemud.server] User disconnected from /127.0.0.1:58502.
+[2014-01-12 04:33:04,312][INFO][treemud.server] User /127.0.0.1:58502 dismissed.
+[2014-01-12 13:35:05,509][INFO][treemud.server] User connected from /127.0.0.1:52654.
+[2014-01-12 13:35:12,503][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:52654
+[2014-01-12 13:35:14,698][INFO][treemud.server] Character login Riecon from /127.0.0.1:52654
+[2014-01-12 13:46:56,984][ERROR][treemud.command.prompt] An error occured for Riecon who typed 'get leaf'.
+java.lang.RuntimeException: obj is not in the same place as ch
+[2014-01-12 14:09:20,429][INFO][treemud.server] Character logout of Riecon from /127.0.0.1:52654
+[2014-01-12 14:09:20,430][INFO][treemud.server] Account logout of penguin2774 from /127.0.0.1:52654
+[2014-01-12 14:09:20,430][INFO][treemud.server] User /127.0.0.1:52654 dismissed.
+[2014-01-12 14:10:36,837][INFO][treemud.server] User connected from /127.0.0.1:52711.
+[2014-01-12 14:10:44,466][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:52711
+[2014-01-12 14:10:45,649][INFO][treemud.server] Character login Riecon from /127.0.0.1:52711
+[2014-01-12 14:26:34,283][INFO][treemud.server] Character logout of Riecon from /127.0.0.1:52711
+[2014-01-12 14:26:34,284][INFO][treemud.server] Account logout of penguin2774 from /127.0.0.1:52711
+[2014-01-12 14:26:34,284][INFO][treemud.server] User /127.0.0.1:52711 dismissed.
+[2014-01-12 14:26:50,691][INFO][treemud.server] User connected from /127.0.0.1:52728.
+[2014-01-12 14:26:56,143][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:52728
+[2014-01-12 14:26:57,451][INFO][treemud.server] Character login Riecon from /127.0.0.1:52728

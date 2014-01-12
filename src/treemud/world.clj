@@ -150,11 +150,10 @@ pretty-prints an object in the world, or the hole world, with a print level of 8
   (let [{ch :character} user
 	new-loc (@*the-world* (:location @ch))]
     (dosync
-     (ref-set new-loc (assoc @new-loc :contents (conj (:contents @new-loc) (:vname @ch))))
+     (alter new-loc assoc  :contents (conj (:contents @new-loc) (:vname @ch)))
      (alter ch assoc :soul soul/pc-soul)
-     (ref-set *the-world* (assoc @*the-world* (:vname @ch)
-				 ch))
-     (ref-set *pcs* (conj @*pcs* ch))
+     (alter *the-world* assoc (:vname @ch) ch)
+     (alter *pcs* conj ch)
      (commute *pcs-to-users* assoc (:vname @ch) user))))
 
 (defn leave 
@@ -164,9 +163,9 @@ for normal dismissing of users call (disconnect user) or (disconnect (:user @ch)
   (let [{ch :character} user
 	loc (@*the-world* (:location @ch))]
     (dosync
-     (ref-set loc (assoc @loc :contents (disj (:contents @loc) (:vname @ch))))
+     (alter loc assoc :contents (disj (:contents @loc) (:vname @ch)))
      (alter ch dissoc :soul)
-     (ref-set *the-world* (dissoc @*the-world* (:vname @ch)))
-     (ref-set *pcs* (disj @*pcs* ch))
+     (alter *the-world* dissoc  (:vname @ch))
+     (alter *pcs* disj ch)
      (commute *pcs-to-users* dissoc (:vname @ch)))))
     

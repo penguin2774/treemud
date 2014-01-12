@@ -59,11 +59,37 @@ with PC's saved inventory, which are not considered"
        (symbol (str (name vname) "#" (UUID/randomUUID)))))
 	  
 		 
-    
+(defn insert-obj
+  "Inserts obj into world at loc. Obj is the maphash for the object, world is the *the-world* hash and 
+loc is a vname already in the world. Loc's contents are also updated. 
+loc is optional, and objs without a loc are either rooms or used for cloning in resets and the like.
+This means loc doesn't need to have obj in its contents to end up with it there.
+Must be called in a transaction, and any vnames refrenced in obj's contents or other fields must be inserted in the same transaction to avoid instability."
+  ([obj world]
+     (alter world assoc (:vname obj) (ref obj)))
+  ([obj world loc]
+     (let [vnames-done (atom #{})
+           loc-ref (@world loc)]
+       
+       (when-not (@world (:vname obj))
+         (assert loc-ref (format "Location %s doesn't exists in the world" loc))
+         (alter world assoc (:vname obj) (ref (assoc obj :location loc)))
+         (alter loc-ref assoc :contents (conj (@loc-ref :contents) (:vname obj))) ))))
+
+(defn remove-obj 
+  "Removes obj from the world. If obj has contents it dumps those contents into either its own location or 'void.trash"
+  ([obj world]
+     (alter world dissoc (:vname obj))
+     (if (:contents obj)
+       (let [dump-loc (or (:location obj) 'void.trash)]
+         (doseq [cobj obj]
+           (alter (@world cobj) assoc :location dump-loc)
+           (alter (@world dump-loc) assoc  :contents (conj (@(@world dump-loc) :contents) cobj)))))))
+           
 
 ;; TODO Items in :contents need to be instanced too.
 
-(defn init-item 
+(defn init-item!
   "Creates a new item in the world using an existing one as a base."
   [vname world loc]
   (assert (and (@world vname) (= (:type @(@world vname)) :item)))
@@ -77,7 +103,8 @@ with PC's saved inventory, which are not considered"
      (alter loc assoc :contents (conj (:contents @loc) (:vname @obj)))
      obj)))
 
-(defn init-mobile 
+
+(defn init-mobile!
   "Creates a new mobile in the world using an existing one as a base."
   [vname world loc]
   (assert (and (@world vname) (= (:type @(@world vname)) :mobile) ))

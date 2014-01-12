@@ -73,7 +73,23 @@ returns a reference to it."
 	      (filter #(.endsWith (.getName %) ".pc") (file-seq pc-dir)))
       {})))
 
+(defn- serialize-pc 
+  "Takes contents and replaces vname with full object's hash, and does the same to the object hash if it has 
+a contents field recursivly."
+  [pc]
+  (let [dehashed-objects (atom #{})]
+      (letfn [(deref-vnames [item]
+                (swap! dehashed-objects conj (:vname item))
+                (if (:contents item)
+                  (assoc item :contents (set (for  [i (:contents item)]
+                                               (do (assert (not (contains? @dehashed-objects i)) (format  "object %s refrenced twice in object %s (second time)" i (:vname item) ))
+                                                   (deref-vnames (world/to-obj i))))))
+              item))]
+    (deref-vnames pc))))
 
+;;(defn- deserialize-pc [pc]
+  
+  
 (defn save-pc
   "Save the pc to his owner's account folder. Creating anything inbetween there as necessary."
   [pc account]
@@ -84,7 +100,7 @@ returns a reference to it."
 	pc-file (doto (java.io.File. (str "accounts/" (:name @account) "/" (:name @pc) ".pc"))
 		  (.createNewFile))]
     (with-open [out (writer pc-file)]
-      (pprint (dissoc @pc :soul :contents ) out))) ; TODO: :contents needs to be saved properly as item instances do
+      (pprint @pc :soul out))) ; TODO: :contents needs to be saved properly as item instances do
                                                    ; not presist between mud resets.
   pc)
 
