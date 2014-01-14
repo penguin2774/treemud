@@ -15,7 +15,8 @@
   (:require [treemud.world.load-areas :as loader]
 	    [treemud.world.init :as init]
 	    [treemud.event.soul :as soul]
-	    [treemud.server.comm :as comm]
+	    [treemud.utils.hooks :as hooks]
+            [treemud.account.file :as pc-file]
 	    clojure.pprint))
 
 ;; The world hash should be stored here, as well as functions to manipulate it.
@@ -150,7 +151,7 @@ pretty-prints an object in the world, or the hole world, with a print level of 8
 
 
 
-
+;(hooks/def-hook pc-enter-world)
 
 (defn enter 
   "Enters a user (with a valid :character) into the world, called by user's socket managment function after login."
@@ -167,20 +168,25 @@ pretty-prints an object in the world, or the hole world, with a print level of 8
      (alter *pcs* conj ch)
      (commute *pcs-to-users* assoc (:vname @ch) user))))
 
+;(hooks/def-hook pc-leave-world)
+
 (defn leave 
   "Removes the character cleany from the world, used by the user's connection managment function. 
 for normal dismissing of users call (disconnect user) or (disconnect (:user @ch))"
   [user pc]
-  (dosync
-   (let [{ch :character} user
-         items (map to-obj-ref (contents-set pc))
-         loc (@*the-world* (:location @ch))]
-
-     (alter loc assoc :contents (disj (:contents @loc) (:vname @ch)))
+  (apply pc-file/save-pc 
+   (dosync
+    (let [{ch :character} user
+          items (map to-obj-ref (contents-set pc))
+          loc (@*the-world* (:location @ch))]
+      
+      (alter loc assoc :contents (disj (:contents @loc) (:vname @ch)))
      (alter ch dissoc :soul)
      (alter *the-world* dissoc  (:vname @ch))
      (doseq [item items]
        (alter *the-world* dissoc (:vname @item)))
      (alter *pcs* disj ch)
-     (commute *pcs-to-users* dissoc (:vname @ch)))))
+     (commute *pcs-to-users* dissoc (:vname @ch))
+     [(:account user) ch (map deref items)])))
+  user)
 

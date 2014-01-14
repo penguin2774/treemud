@@ -852,3 +852,105 @@ java.lang.NullPointerException
     :short "a tiny acorn",
     :long "A tiny acorn sits here."}>)
 
+[2014-01-14 18:43:21,719][ERROR][treemud.command.prompt] An error occured for Riecon who typed 'save'.
+clojure.lang.ArityException: Wrong number of args (2) passed to: file$save-pc
+	at clojure.lang.AFn.throwArity(AFn.java:437)
+	at clojure.lang.AFn.invoke(AFn.java:43)
+	at treemud.command.basic$do_save.invoke(basic.clj:21)
+	at clojure.lang.AFn.applyToHelper(AFn.java:163)
+	at clojure.lang.AFn.applyTo(AFn.java:151)
+	at clojure.core$apply.invoke(core.clj:619)
+	at treemud.command.prompt$run_command.invoke(prompt.clj:29)
+	at treemud.command.prompt$command_prompt$fn__2560.invoke(prompt.clj:45)
+	at treemud.command.prompt$command_prompt.invoke(prompt.clj:44)
+	at treemud.command$prompt.invoke(command.clj:24)
+	at treemud.server$user_socket.invoke(server.clj:106)
+	at clojure.lang.AFn.applyToHelper(AFn.java:167)
+	at clojure.lang.AFn.applyTo(AFn.java:151)
+	at clojure.core$apply.invoke(core.clj:617)
+	at rielib.utils$launch_thread$fn__1651$fn__1653.invoke(utils.clj:212)
+	at rielib.utils$launch_thread$fn__1651.invoke(utils.clj:212)
+	at clojure.lang.AFn.run(AFn.java:24)
+	at java.lang.Thread.run(Thread.java:744)
+[2014-01-14 18:50:39,298][INFO][treemud.server] Character logout of Riecon from /127.0.0.1:49011
+[2014-01-14 18:50:39,298][INFO][treemud.server] Account logout of penguin2774 from /127.0.0.1:49011
+[2014-01-14 18:50:39,298][INFO][treemud.server] User /127.0.0.1:49011 dismissed.
+[2014-01-14 18:50:52,706][INFO][treemud.server] User connected from /127.0.0.1:49253.
+[2014-01-14 18:50:59,345][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:49253
+[2014-01-14 18:51:00,446][INFO][treemud.server] Account logout of penguin2774 from /127.0.0.1:49253
+[2014-01-14 18:51:00,446][FATAL][treemud.server] User /127.0.0.1:49253 booted by uncought exception.
+java.lang.RuntimeException: Unreadable form
+	at clojure.lang.Util.runtimeException(Util.java:219)
+	at clojure.lang.LispReader$UnreadableReader.invoke(LispReader.java:1116)
+	at clojure.lang.LispReader$DispatchReader.invoke(LispReader.java:626)
+	at clojure.lang.LispReader.read(LispReader.java:185)
+	at clojure.core$read.invoke(core.clj:3407)
+	at clojure.core$read.invoke(core.clj:3405)
+	at treemud.account.file$load_pc$fn__5226.invoke(file.clj:63)
+	at treemud.account.file$load_pc.invoke(file.clj:61)
+	at treemud.account.file$load_pcs$fn__5230.invoke(file.clj:76)
+	at clojure.core.protocols$fn__6034.invoke(protocols.clj:143)
+	at clojure.core.protocols$fn__6005$G__6000__6014.invoke(protocols.clj:19)
+	at clojure.core.protocols$seq_reduce.invoke(protocols.clj:31)
+	at clojure.core.protocols$fn__6026.invoke(protocols.clj:54)
+	at clojure.core.protocols$fn__5979$G__5974__5992.invoke(protocols.clj:13)
+	at clojure.core$reduce.invoke(core.clj:6177)
+	at treemud.account.file$load_pcs.invoke(file.clj:79)
+	at treemud.account.manage$select_character.invoke(manage.clj:71)
+	at treemud.account.manage$manage_account.invoke(manage.clj:173)
+	at treemud.account$manage.invoke(account.clj:60)
+	at treemud.server$user_socket.invoke(server.clj:97)
+	at clojure.lang.AFn.applyToHelper(AFn.java:167)
+	at clojure.lang.AFn.applyTo(AFn.java:151)
+	at clojure.core$apply.invoke(core.clj:617)
+	at rielib.utils$launch_thread$fn__1651$fn__1653.invoke(utils.clj:212)
+	at rielib.utils$launch_thread$fn__1651.invoke(utils.clj:212)
+	at clojure.lang.AFn.run(AFn.java:24)
+	at java.lang.Thread.run(Thread.java:744)
+[2014-01-14 18:51:00,446][INFO][treemud.server] User /127.0.0.1:49253 dismissed.
+[2014-01-14 18:52:59,454][INFO][treemud.server] User connected from /127.0.0.1:49258.
+[2014-01-14 18:53:08,129][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:49258
+[2014-01-14 18:53:10,085][INFO][treemud.server] Character login Riecon from /127.0.0.1:49258
+[2014-01-14 18:53:10,089][INFO][treemud.server] Contents: (#<Ref@138bd16f: 
+   {:location pc.Riecon,
+    :type :item,
+    :vname peaceful.acorn#special1,
+    :name "acorn",
+    :short "a tiny acorn",
+    :long "A tiny acorn sits here."}>)
+
+[2014-01-14 18:53:15,688][INFO][treemud.server] Character logout of Riecon from /127.0.0.1:49258
+[2014-01-14 18:53:15,688][INFO][treemud.server] Account logout of penguin2774 from /127.0.0.1:49258
+[2014-01-14 18:53:15,689][INFO][treemud.server] User /127.0.0.1:49258 dismissed.
+[2014-01-14 18:53:19,880][INFO][treemud.server] User connected from /127.0.0.1:49260.
+[2014-01-14 18:53:26,248][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:49260
+[2014-01-14 18:53:28,090][INFO][treemud.server] Character login Riecon from /127.0.0.1:49260
+[2014-01-14 18:53:28,094][INFO][treemud.server] Contents: (#<Ref@2a30aa7d: 
+   {:location pc.Riecon,
+    :type :item,
+    :vname peaceful.acorn#special1,
+    :name "acorn",
+    :short "a tiny acorn",
+    :long "A tiny acorn sits here."}>)
+
+[2014-01-14 18:53:39,111][INFO][treemud.server] Character logout of Riecon from /127.0.0.1:49260
+[2014-01-14 18:53:39,111][INFO][treemud.server] Account logout of penguin2774 from /127.0.0.1:49260
+[2014-01-14 18:53:39,111][INFO][treemud.server] User /127.0.0.1:49260 dismissed.
+[2014-01-14 18:53:43,906][INFO][treemud.server] User connected from /127.0.0.1:49262.
+[2014-01-14 18:53:50,645][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:49262
+[2014-01-14 18:53:51,913][INFO][treemud.server] Character login Riecon from /127.0.0.1:49262
+[2014-01-14 18:53:51,920][INFO][treemud.server] Contents: (#<Ref@65bc21af: 
+   {:type :item,
+    :vname peaceful.acorn#b269b1f1-c630-4e50-ad11-b10eb44f2e04,
+    :name "acorn",
+    :short "a tiny acorn",
+    :long "A tiny acorn sits here.",
+    :location pc.Riecon}>
+ #<Ref@22479c57: 
+   {:location pc.Riecon,
+    :type :item,
+    :vname peaceful.acorn#special1,
+    :name "acorn",
+    :short "a tiny acorn",
+    :long "A tiny acorn sits here."}>)
+

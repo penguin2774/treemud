@@ -17,6 +17,7 @@
   (:use treemud.server.comm)
   (:require [rielib.utils :as utils]
 	    [clojure.tools.logging :as log]
+            treemud.account.file
 	    [treemud 
              [nanny :as nanny]
 	     [command :as command]

@@ -7,7 +7,9 @@
    new connections from nanny to account and finaly to command as they
    get further access.
 ** DONE nanny
-   Contains the login prompt and banner. also the account making functions.
+   Contains the login prompt and banner. also the account making
+   functions.
+** BUG First login attempt comes up with "invalid account name" every time.
 ** DONE account
    Contains the account managment menu as well as all the account
    creation and managment functions.
@@ -43,6 +45,8 @@
 ** Senses/Info
 *** DONE look
 *** DONE look <object>
+*** BUG exit descriptions are not spaced out
+
 *** CODE look in <object>/examin <object>
 *** CODE look <direction>
 lets you look down a hallway ext.
@@ -212,7 +216,7 @@ Syntax:  sacrifice <object>
 Destroys object, and sends a message to imms (logged). 
 
 ** Equipment/Inventory
-*** CODE Persistent player inventory
+*** DONE Persistent player inventory
 *** CODE wear/hold/wield/remove
 Syntax:  hold   <object>
 Syntax:  remove <object>

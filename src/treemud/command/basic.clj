@@ -12,13 +12,14 @@
 (ns treemud.command.basic
   (:use treemud.command.parse)
   (:require [treemud.server.comm :as comm]
+            [treemud.world :as world]
             [treemud.account.file :as file]))
 
 (defn do-save
   "Syntax: save
 Saves the charicter and all their equipment"
   [user command]
-  (file/save-pc (:character user) (:account user))
+  (file/save-pc (:account user) (:character user) (map world/to-obj (world/contents-set @(:character user) #{})))
   (comm/sendln user "Charicter Saved!"))
 
 (defn do-quit 

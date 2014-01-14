@@ -102,29 +102,23 @@ returns a reference to it."
 
 ;;(defn- deserialize-pc [pc]
 
-(defn- contents-set 
-  ([obj]
-     (contents-set obj #{}))
-  ([obj acc]
-     (apply clojure.set/union (:contents obj) 
-            (for [cobj (:contents obj)]
-              (contents-set (world/to-obj cobj) acc)))))
+
 (defn save-pc
   "Save the pc to his owner's account folder. Creating anything inbetween there as necessary."
-  [pc account]
-  (assert (:name @pc))
-  (assert (:name @account))
-  
-  (let [pc-dir (doto (java.io.File. (str "accounts/" (:name @account)))
-                 (.mkdirs))
-        pc-file (doto (java.io.File. (str "accounts/" (:name @account) "/" (:name @pc) ".pc"))
-                  (.createNewFile))
-        objs-to-file (dosync (cons (dissoc @pc :soul) (map world/to-obj (world/contents-set @pc #{}))))]
-    
-    (with-open [out (writer pc-file)]
-      (doseq [cobj objs-to-file]
-        (pprint cobj out)))
-    (vector (cons pc  objs-to-file))))
+  [account pc items]
+     (assert (:name @pc))
+     (assert (:name @account))
+     
+     (let [pc-dir (doto (java.io.File. (str "accounts/" (:name @account)))
+                    (.mkdirs))
+           pc-file (doto (java.io.File. (str "accounts/" (:name @account) "/" (:name @pc) ".pc"))
+                     (.createNewFile))
+           objs-to-file (dosync (cons (dissoc @pc :soul) items) )]
+       
+       (with-open [out (writer pc-file)]
+         (doseq [cobj objs-to-file]
+           (pprint cobj out)))
+       (vector (cons pc  objs-to-file))))
 
 (defn account-exists? 
   "Returns true if user account exists by checking if the .acc file exists."
@@ -142,7 +136,8 @@ returns a reference to it."
 (defn create-pc 
   "Creats the PC for the first time, called by the account manager."
   [account name data]
-  (save-pc (ref (world.init/init-pc (merge data {:type :mobile
+  (save-pc account
+           (ref (world.init/init-pc (merge data {:type :mobile
 						 :name name
-						 :vname (symbol (str "pc." (.replace name " " "-")))})
-				    @world/*the-world*)) account))
+						 :vname (symbol (str "pc." (.replace name " " "-")))})))
+           []))

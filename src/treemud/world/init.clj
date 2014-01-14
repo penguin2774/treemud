@@ -98,6 +98,6 @@ with PC's saved inventory, which are not considered"
 
 (defn init-pc 
   "Initializes the PC for the first time. Done at creation."
-  [obj world]
+  [obj]
   (merge mobile-defaults obj))
 
