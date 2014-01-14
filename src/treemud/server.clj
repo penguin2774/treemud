@@ -94,19 +94,21 @@ also does the connection, and login/out logging, and error logging for non-comma
        (try
 	(log/info (format "Account Login of %s from %s" (:name @account) addr))
 	(let [user (assoc user :account account)]
-	  (if-let [character (account/manage user )]
-	    (let [user (assoc user :character character)]
+	  (if-let [pc-objects (account/manage user )] ;; takes pc objects from player file.
+	    (let [pc (ref (first pc-objects))
+                   objs (map ref (rest pc-objects))
+                   user (assoc user :character pc )]
 	      (try 
-	       (world/enter user)
-	       (log/info  (format "Character login %s from %s" (:name @character) addr))
+	       (world/enter user pc objs)
+	       (log/info  (format "Character login %s from %s" (:name @pc) addr))
 	       (command/prompt user)
 	       (finally 
-		(world/leave user)
-		(log/info  (format "Character logout of %s from %s" (:name @character) addr))
+		(world/leave user pc)
+		(log/info  (format "Character logout of %s from %s" (:name @pc) addr))
 		)))))
-	(finally 
-	 (account/logout account)
-	 (log/info  (format "Account logout of %s from %s" (:name @account) addr)))))
+        (finally 
+          (account/logout account)
+          (log/info  (format "Account logout of %s from %s" (:name @account) addr)))))
      (catch java.io.IOException e
        (log/info (str "User disconnected from " addr".")))
      (catch Exception e

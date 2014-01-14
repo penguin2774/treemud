@@ -57,52 +57,74 @@ returns a reference to it."
   "Does the individual read for loading the pc from the file."
   [file]
   (with-open [in (pushback-reader file)]
-    (let [pc (read in )]
+    (let [all-objects
+          (loop [acc [] obj (read in nil :eof)]
+            (if-not (= obj :eof)
+              (recur (conj acc obj) (read in nil :eof))
+              acc))]
+      (assert (= (:type (first all-objects)) :mobile) (format "First object in PC file %s was not a mobile"
+                                                              file))
       ;; leave :location for world/enter
-      pc)))
+      all-objects)))
 
-(defn load-pcs 
+(defn load-pcs
   "Loads all PCs owned by account into a {name, ref} hash. Called by the account manager."
   [account]
   (let [pc-dir (java.io.File. (str "accounts/" (:name @account) "/"))]
     (if (.exists pc-dir)
       (reduce (fn [acc file]
-		(let [pc (load-pc file)]
-		  (assoc acc (:name pc) (ref pc)))) 
+		(let [pc-data (load-pc file)]
+		  (assoc acc (:name (first pc-data)) pc-data ))) 
 	      {}
 	      (filter #(.endsWith (.getName %) ".pc") (file-seq pc-dir)))
       {})))
 
-(defn- serialize-pc 
-  "Takes contents and replaces vname with full object's hash, and does the same to the object hash if it has 
-a contents field recursivly."
-  [pc]
-  (let [dehashed-objects (atom #{})]
-      (letfn [(deref-vnames [item]
-                (swap! dehashed-objects conj (:vname item))
-                (if (:contents item)
-                  (assoc item :contents (set (for  [i (:contents item)]
-                                               (do (assert (not (contains? @dehashed-objects i)) (format  "object %s refrenced twice in object %s (second time)" i (:vname item) ))
-                                                   (deref-vnames (world/to-obj i))))))
-              item))]
-    (deref-vnames pc))))
+;; Ganna go with the area file style of serialization, and just simply dump all :contents objects straight into
+;; the player file after the pc object.
+;; When loading We'll just merge the hole file into world in one transaction. This should work better then manualy
+;; packing and unpacking players inventories.
+
+
+
+;; (defn- serialize-pc 
+;;   "Takes contents and replaces vname with full object's hash, and does the same to the object hash if it has 
+;; a contents field recursivly."
+;;   [pc]
+;;   (let [dehashed-objects (atom #{})]
+;;       (letfn [(deref-vnames [item]
+;;                 (swap! dehashed-objects conj (:vname item))
+;;                 (if (:contents item)
+;;                   (assoc item :contents (set (for  [i (:contents item)]
+;;                                                (do (assert (not (contains? @dehashed-objects i)) (format  "object %s refrenced twice in object %s (second time)" i (:vname item) ))
+;;                                                    (deref-vnames (world/to-obj i))))))
+;;               item))]
+;;     (deref-vnames pc))))
 
 ;;(defn- deserialize-pc [pc]
-  
-  
+
+(defn- contents-set 
+  ([obj]
+     (contents-set obj #{}))
+  ([obj acc]
+     (apply clojure.set/union (:contents obj) 
+            (for [cobj (:contents obj)]
+              (contents-set (world/to-obj cobj) acc)))))
 (defn save-pc
   "Save the pc to his owner's account folder. Creating anything inbetween there as necessary."
   [pc account]
   (assert (:name @pc))
   (assert (:name @account))
+  
   (let [pc-dir (doto (java.io.File. (str "accounts/" (:name @account)))
-		 (.mkdirs))
-	pc-file (doto (java.io.File. (str "accounts/" (:name @account) "/" (:name @pc) ".pc"))
-		  (.createNewFile))]
+                 (.mkdirs))
+        pc-file (doto (java.io.File. (str "accounts/" (:name @account) "/" (:name @pc) ".pc"))
+                  (.createNewFile))
+        objs-to-file (dosync (cons (dissoc @pc :soul) (map world/to-obj (world/contents-set @pc #{}))))]
+    
     (with-open [out (writer pc-file)]
-      (pprint @pc :soul out))) ; TODO: :contents needs to be saved properly as item instances do
-                                                   ; not presist between mud resets.
-  pc)
+      (doseq [cobj objs-to-file]
+        (pprint cobj out)))
+    (vector (cons pc  objs-to-file))))
 
 (defn account-exists? 
   "Returns true if user account exists by checking if the .acc file exists."

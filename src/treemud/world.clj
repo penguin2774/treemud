@@ -139,6 +139,14 @@ pretty-prints an object in the world, or the hole world, with a print level of 8
   `(with-bindings {#'*print-level* 8}
      ~@args))
 
+(defn contents-set 
+  ([obj]
+     (contents-set obj #{}))
+  ([obj acc]
+     (let [obj (to-obj obj)]
+       (apply clojure.set/union (:contents obj) 
+              (for [cobj (:contents obj)]
+                (contents-set (to-obj cobj) acc))))))
 
 
 
@@ -146,26 +154,33 @@ pretty-prints an object in the world, or the hole world, with a print level of 8
 
 (defn enter 
   "Enters a user (with a valid :character) into the world, called by user's socket managment function after login."
-  [user]
-  (let [{ch :character} user
-	new-loc (@*the-world* (:location @ch))]
-    (dosync
+  [user pc items]
+  (dosync
+   (let [{ch :character} user
+         new-loc (@*the-world* (:location @ch))]
+ 
      (alter new-loc assoc  :contents (conj (:contents @new-loc) (:vname @ch)))
      (alter ch assoc :soul soul/pc-soul)
      (alter *the-world* assoc (:vname @ch) ch)
+     (doseq [item items]
+       (alter *the-world* assoc (:vname @item) item))
      (alter *pcs* conj ch)
      (commute *pcs-to-users* assoc (:vname @ch) user))))
 
 (defn leave 
   "Removes the character cleany from the world, used by the user's connection managment function. 
 for normal dismissing of users call (disconnect user) or (disconnect (:user @ch))"
-  [user]
-  (let [{ch :character} user
-	loc (@*the-world* (:location @ch))]
-    (dosync
+  [user pc]
+  (dosync
+   (let [{ch :character} user
+         items (map to-obj-ref (contents-set pc))
+         loc (@*the-world* (:location @ch))]
+
      (alter loc assoc :contents (disj (:contents @loc) (:vname @ch)))
      (alter ch dissoc :soul)
      (alter *the-world* dissoc  (:vname @ch))
+     (doseq [item items]
+       (alter *the-world* dissoc (:vname @item)))
      (alter *pcs* disj ch)
      (commute *pcs-to-users* dissoc (:vname @ch)))))
-    
+

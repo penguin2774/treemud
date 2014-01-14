@@ -11,7 +11,15 @@
 ;; :doc Holds basic commands, essentials like who and quit.
 (ns treemud.command.basic
   (:use treemud.command.parse)
-  (:require [treemud.server.comm :as comm]))
+  (:require [treemud.server.comm :as comm]
+            [treemud.account.file :as file]))
+
+(defn do-save
+  "Syntax: save
+Saves the charicter and all their equipment"
+  [user command]
+  (file/save-pc (:character user) (:account user))
+  (comm/sendln user "Charicter Saved!"))
 
 (defn do-quit 
   "Syntax: quit
@@ -23,3 +31,4 @@ Logs your character out of the mud."
 
 
 (def-command do-quit "quit")
+(def-command do-save "save")

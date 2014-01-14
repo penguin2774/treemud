@@ -59,10 +59,11 @@ of pcs in the account, in order they are to be chosen from."
   [pcs]
   (if-not (empty? pcs)
     (reduce str 
-	    (for [[n pc] (indexed (vals pcs))]
-	      (format "%d - %s (%d %s %s)\n\r" 
-		    (inc n) (:name @pc) 
-		    (:level @pc) (:race @pc) (:class @pc))))))
+	    (for [[n pc-data] (indexed (vals pcs))]
+              (let [pc (first pc-data)]
+                (format "%d - %s (%d %s %s)\n\r" 
+                        (inc n) (:name pc)
+                        (:level pc) (:race pc) (:class pc)))))))
   
 (defn- select-character 
   "Lists the avalible PCs, then returns the one chosen. (IO)"
