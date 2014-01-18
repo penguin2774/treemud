@@ -25,6 +25,11 @@
   ([obj type]
      (filter #(= (:type %) type) (contents obj))))
 
+(defn container?
+  "Returns whether obj is a container."
+  [obj]
+  (contains? (world/to-obj obj) :contents))
+
 (defn name
   "Gets the name of an object based on what looker can see."
   [obj looker]

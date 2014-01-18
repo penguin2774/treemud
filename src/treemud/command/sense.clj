@@ -43,8 +43,8 @@ Looks around the room, or at an object."
 			    (:name loc))
 	   "\n\r"
 	   (color/color-str :yellow :bold "[Exits:" 
-			    (apply str (map first
-					    (:exits loc))) "]")
+			    (apply str (interpose " " (map first
+                                                           (:exits loc)))) "]")
 	   "\n\r"
 	   (color/color-str :grey  (:desc loc))
 	   "\n\r"

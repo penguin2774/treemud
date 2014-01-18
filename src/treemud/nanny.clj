@@ -45,7 +45,10 @@ Called by user's socket handler (server/user-socket)."
   [user]
   (loop [delay 2]
     (send-message user "Login> ")
-    (if-let [name (recv-message user)]
+    (if-let [name ((fn [x] 
+                     (println (format "'%s'" x))
+                     x)
+                     (recv-message user))]
       (if (account/exists? name)
 	(do (send-message user "Password> ")
 	    (if-let [pass (recv-message user)]

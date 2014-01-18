@@ -19,7 +19,7 @@
   (:use [clojure.java.io :only [writer reader]]
 	clojure.pprint)
   (:require 
-   [treemud.world :as world]
+   
    [treemud.world.init :as world.init]))
 
 (defn- pushback-reader [x]

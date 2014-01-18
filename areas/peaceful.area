@@ -17,3 +17,10 @@
  :name "tree"
  :short "a tall oak tree"
  :long "A tall oak tree stands here."}
+
+{:type :item
+  :vname peaceful.hollow-stump
+  :name "hollow stump"
+  :short "a hollow stump"
+  :long "An old hollow stump rests here."
+  :contents #{}}

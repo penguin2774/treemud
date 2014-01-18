@@ -9,7 +9,6 @@
 ** DONE nanny
    Contains the login prompt and banner. also the account making
    functions.
-** BUG First login attempt comes up with "invalid account name" every time.
 ** DONE account
    Contains the account managment menu as well as all the account
    creation and managment functions.
@@ -41,7 +40,7 @@
    1. basic sanity checking,
    2. calling world changing functions (found in world/change)
    3. and sending out result events
-* CODE Basic Commands
+* Basic Commands
 ** Senses/Info
 *** DONE look
 *** DONE look <object>
@@ -110,7 +109,7 @@ You cannot drag a character into a death trap, or if either you or they
 are under attack.
  
 ** Object manipulation
-*** CODE get/put/drop/give [75%]
+*** CODE get/put/drop/give [60%]
 Help level: 0
 Syntax:  drop <object>
          drop <amount>  coins
@@ -133,9 +132,12 @@ PUT puts an object into a container.
  
 Use 'drop/get/put all' to reference all objects present.
 Use 'drop/get/put all.<object>' to reference all objects of the same name.
-**** DONE get
+**** DONE get 'object'
+**** CODE get 'object' 'object'
 **** DONE drop
-**** CODE put
+**** TEST put
+***** DONE putting objects in container near player
+***** TEST Putting objects in container in player's inventory
 **** DONE give
 *** CODE empty
 Syntax:  empty <container>

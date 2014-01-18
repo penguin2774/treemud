@@ -48,6 +48,21 @@
      true
      (act/give ch obj victim))))
 
+(defn do-put [user cmd nobj target]
+  (let [ch @(:character user)
+        dest (or (object/find-in ch target ch) ; Try there inventory first
+              (object/find-in (:location ch) target ch))  ; Then there location
+        obj (object/find-in ch nobj ch)]
+    (cond 
+     (not dest)
+     (comm/sendln user "You can't find '%s'." target)
+     (not (object/container? dest))
+     (comm/sendln user "You can't put '%s' in '%s'." nobj target)
+     (not obj)
+     (comm/sendln user "You don't have '%s'." nobj)
+     true
+     (act/put ch obj dest))))
+
 (defn do-inventory [user ch]
   (let [ch @(:character user)]
     (act/examin ch)))
@@ -55,6 +70,7 @@
 (def-command do-get "get" :object)
 (def-command do-drop "drop" :object)
 (def-command do-give "give" :object :object)
+(def-command do-put "put" :object :object)
 (def-command do-inventory "inventory")
 
 
@@ -70,7 +86,7 @@
 		(object/short obj ch)))
 
 (event/def-event-handler :given [ch cause obj other]
-  (event/tellln "You give %s %s" (object/name other ch) 
+  (event/tellln "You give %s %s." (object/name other ch) 
 		(object/short obj ch))
   (if (= ch other)
     (event/tellln "%s gives you %s." (object/name cause ch)
@@ -78,6 +94,13 @@
     (event/tellln "%s gives %s %s." (object/name cause ch)
 		  (object/name other ch)
 		  (object/short obj ch))))
+
+(event/def-event-handler :placed [ch cause obj target]
+  (event/tellln "You put %s in %s." (object/name target ch)
+                (object/short obj ch))
+  (event/tellln "%s puts %s in %s." (object/name cause ch)
+                (object/short obj ch)
+                (object/short target ch)))
 
 (event/def-event-handler :examine-inventory [ch cause]
   (event/tellln 

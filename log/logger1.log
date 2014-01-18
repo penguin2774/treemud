@@ -954,3 +954,84 @@ java.lang.RuntimeException: Unreadable form
     :short "a tiny acorn",
     :long "A tiny acorn sits here."}>)
 
+[2014-01-14 23:50:59,120][INFO][treemud.server] User connected from /127.0.0.1:46378.
+[2014-01-14 23:53:05,251][INFO][treemud.server] User disconnected from /127.0.0.1:46378.
+[2014-01-14 23:53:05,251][INFO][treemud.server] User /127.0.0.1:46378 dismissed.
+[2014-01-14 23:53:05,275][INFO][treemud.server] User connected from /127.0.0.1:46379.
+[2014-01-14 23:54:40,190][INFO][treemud.server] User disconnected from /127.0.0.1:46379.
+[2014-01-14 23:54:40,191][INFO][treemud.server] User /127.0.0.1:46379 dismissed.
+[2014-01-14 23:54:40,213][INFO][treemud.server] User connected from /127.0.0.1:46380.
+[2014-01-14 23:55:17,028][INFO][treemud.server] User disconnected from /127.0.0.1:46380.
+[2014-01-14 23:55:17,028][INFO][treemud.server] User /127.0.0.1:46380 dismissed.
+[2014-01-14 23:55:17,050][INFO][treemud.server] User connected from /127.0.0.1:46381.
+[2014-01-14 23:58:08,752][INFO][treemud.server] User disconnected from /127.0.0.1:46381.
+[2014-01-14 23:58:08,752][INFO][treemud.server] User /127.0.0.1:46381 dismissed.
+[2014-01-14 23:58:08,773][INFO][treemud.server] User connected from /127.0.0.1:46396.
+[2014-01-14 23:59:10,871][INFO][treemud.server] User connected from /127.0.0.1:46398.
+[2014-01-14 23:59:31,750][INFO][treemud.server] User connected from /127.0.0.1:46399.
+[2014-01-15 00:03:53,781][INFO][treemud.server] User disconnected from /127.0.0.1:46399.
+[2014-01-15 00:03:53,781][INFO][treemud.server] User /127.0.0.1:46399 dismissed.
+[2014-01-15 00:07:24,404][INFO][treemud.server] User connected from /127.0.0.1:46441.
+[2014-01-15 00:07:33,121][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:46441
+[2014-01-15 00:07:34,573][INFO][treemud.server] Character login Riecon from /127.0.0.1:46441
+[2014-01-18 15:04:59,154][INFO][treemud.server] User connected from /127.0.0.1:60542.
+[2014-01-18 15:05:04,807][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:60542
+[2014-01-18 15:05:06,001][INFO][treemud.server] Character login Riecon from /127.0.0.1:60542
+[2014-01-18 15:07:10,579][ERROR][treemud.command.prompt] An error occured for Riecon who typed 'put acorn stump'.
+java.lang.IllegalArgumentException: contains? not supported on type: clojure.lang.Ref
+	at clojure.lang.RT.contains(RT.java:724)
+	at clojure.core$contains_QMARK_.invoke(core.clj:1402)
+	at treemud.world.object$container_QMARK_.invoke(object.clj:31)
+	at treemud.command.inventory$do_put.invoke(inventory.clj:59)
+	at clojure.lang.AFn.applyToHelper(AFn.java:172)
+	at clojure.lang.AFn.applyTo(AFn.java:151)
+	at clojure.core$apply.invoke(core.clj:619)
+	at treemud.command.prompt$run_command.invoke(prompt.clj:29)
+	at treemud.command.prompt$command_prompt$fn__2810.invoke(prompt.clj:45)
+	at treemud.command.prompt$command_prompt.invoke(prompt.clj:44)
+	at treemud.command$prompt.invoke(command.clj:24)
+	at treemud.server$user_socket.invoke(server.clj:105)
+	at clojure.lang.AFn.applyToHelper(AFn.java:167)
+	at clojure.lang.AFn.applyTo(AFn.java:151)
+	at clojure.core$apply.invoke(core.clj:617)
+	at rielib.utils$launch_thread$fn__1649$fn__1651.invoke(utils.clj:212)
+	at rielib.utils$launch_thread$fn__1649.invoke(utils.clj:212)
+	at clojure.lang.AFn.run(AFn.java:24)
+	at java.lang.Thread.run(Thread.java:744)
+[2014-01-18 15:08:30,199][ERROR][treemud.command.prompt] An error occured for Riecon who typed 'put stump acorn'.
+clojure.lang.ArityException: Wrong number of args (0) passed to: PersistentArrayMap
+	at clojure.lang.AFn.throwArity(AFn.java:437)
+	at clojure.lang.AFn.invoke(AFn.java:35)
+	at treemud.act.inventory$put$move_obj_BANG___2726$fn__2727.invoke(inventory.clj:67)
+	at clojure.lang.AFn.call(AFn.java:18)
+	at clojure.lang.LockingTransaction.run(LockingTransaction.java:263)
+	at clojure.lang.LockingTransaction.runInTransaction(LockingTransaction.java:231)
+	at treemud.act.inventory$put$move_obj_BANG___2726.invoke(inventory.clj:63)
+	at treemud.act.inventory$put.invoke(inventory.clj:77)
+	at treemud.command.inventory$do_put.invoke(inventory.clj:64)
+	at clojure.lang.AFn.applyToHelper(AFn.java:172)
+	at clojure.lang.AFn.applyTo(AFn.java:151)
+	at clojure.core$apply.invoke(core.clj:619)
+	at treemud.command.prompt$run_command.invoke(prompt.clj:29)
+	at treemud.command.prompt$command_prompt$fn__2810.invoke(prompt.clj:45)
+	at treemud.command.prompt$command_prompt.invoke(prompt.clj:44)
+	at treemud.command$prompt.invoke(command.clj:24)
+	at treemud.server$user_socket.invoke(server.clj:105)
+	at clojure.lang.AFn.applyToHelper(AFn.java:167)
+	at clojure.lang.AFn.applyTo(AFn.java:151)
+	at clojure.core$apply.invoke(core.clj:617)
+	at rielib.utils$launch_thread$fn__1649$fn__1651.invoke(utils.clj:212)
+	at rielib.utils$launch_thread$fn__1649.invoke(utils.clj:212)
+	at clojure.lang.AFn.run(AFn.java:24)
+	at java.lang.Thread.run(Thread.java:744)
+[2014-01-18 15:12:58,043][ERROR][treemud.command.prompt] An error occured for Riecon who typed 'put acorn stump'.
+java.lang.RuntimeException: ch doesn't have or isn't near target
+[2014-01-18 15:19:54,121][INFO][treemud.server] Character logout of Riecon from /127.0.0.1:60542
+[2014-01-18 15:19:54,121][INFO][treemud.server] Account logout of penguin2774 from /127.0.0.1:60542
+[2014-01-18 15:19:54,121][INFO][treemud.server] User /127.0.0.1:60542 dismissed.
+[2014-01-18 15:22:19,459][INFO][treemud.server] User connected from /127.0.0.1:60629.
+[2014-01-18 15:22:41,354][INFO][treemud.server] Account Login of penguin2774 from /127.0.0.1:60629
+[2014-01-18 15:22:48,069][INFO][treemud.server] Character login Riecon from /127.0.0.1:60629
+[2014-01-18 15:23:06,452][INFO][treemud.server] Character logout of Riecon from /127.0.0.1:60629
+[2014-01-18 15:23:06,452][INFO][treemud.server] Account logout of penguin2774 from /127.0.0.1:60629
+[2014-01-18 15:23:06,452][INFO][treemud.server] User /127.0.0.1:60629 dismissed.

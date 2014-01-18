@@ -39,7 +39,7 @@
 
 (defonce ^{:doc "Master shutdown switch. Not to be used directly" 
 	   :private true}
-  *shutdown* (atom false))
+  shutdown-switch (atom false))
 (defonce ^{:doc "Set of all connected users."} 
   *users* (atom #{}))
 
@@ -135,7 +135,7 @@ also does the connection, and login/out logging, and error logging for non-comma
 (defn shutdown-server!
   "Used to trigger a safe shutdown of the server.
 note: not every well tested..."
-  [] (reset! *shutdown* true))
+  [] (reset! shutdown-switch true))
 
 (defn main 
   "The main loop! Call this to start the mud, note: launch on a new thread to keep your REPL"
@@ -148,11 +148,11 @@ note: not every well tested..."
 			     (doseq [user @*users*]
 			       (disconnect user "Mud is shutting down NOW! bbl."))
 			     (println "Done"))]
-      (reset! *shutdown* false)
+      (reset! shutdown-switch false)
       (try 
        (dosync (ref-set server nsrv))
        (println "Done")
-       (while (not @*shutdown*)
+       (while (not @shutdown-switch)
 					;world tick?
          (Thread/sleep 1000))
        (catch Exception e
