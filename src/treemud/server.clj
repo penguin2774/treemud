@@ -82,6 +82,7 @@
 
 
 
+
 (defn- user-socket 
   "This is the base user socket handling function. It welcomes, runs the nanny, account manager and finally the command prompt.
 also does the connection, and login/out logging, and error logging for non-command-prompt errors."

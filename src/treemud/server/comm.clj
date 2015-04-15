@@ -45,7 +45,7 @@
 (defn user-command-prompt 
   "Produces the command prompt for a user whos logged in to the world."
   ([user]
-  ":treemud>"))
+  ":treemud> "))
 
 (defn re-command-prompt 
   "Convenience function for resending the command prompt."
