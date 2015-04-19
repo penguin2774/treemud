@@ -5,14 +5,15 @@
 ;;   |   |   |-' |-'     |   | |  | |  |  ;;
 ;;   o   o   o-o o-o     o   o o--o  o-o  ;;
 ;;                                        ;;
-;; COPYRIGHT © 2010 Nathanael Cunningham  ;;
+;; COPYRIGHT Â© 2010 Nathanael Cunningham  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Contains all the world functions, 
 ;; which take care of all the game's objects
 
 (ns treemud.world
   (:use contrib.except)
-  (:require [treemud.world.load-areas :as loader]
+  (:require clojure.set
+            [treemud.world.load-areas :as loader]
 	    [treemud.world.init :as init]
 	    [treemud.event.soul :as soul]
 	    [treemud.utils.hooks :as hooks]
@@ -60,6 +61,7 @@ hashed by there vname."} *the-world* (ref (initiate-world)))
    (@*the-world* x)
    (map? x)
    (@*the-world* (:vname x))))
+
 
 (defn to-obj 
   "Returns the object hash denoted by x,

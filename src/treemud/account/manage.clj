@@ -98,12 +98,13 @@ of pcs in the account, in order they are to be chosen from."
 		 (if (ask-yn user (format "Is '%s' correct?" msg))
 		   msg
 		   (recur (promptln user "Please enter a short description:"))))
+        sex (option-loop user "Please choose your sex [male female]" ["male" "female"])
 				
 	race (option-loop user "Please choose a race [human elf dwarf gnome halfling hobbit]" ["human" "elf" "dwarf" "gnome" "halfling" "hobbit"])
 	class (option-loop user "Please choose a class [fighter rouge wizard cleric]:" ["fighter" "rouge" "wizard" "cleric"])]
     (working-done user "Creating PC" 
 		  
-		    (create-pc (:account user) name {:short short :race race :class class :level 1}))))
+                  (create-pc (:account user) name {:short short :race race :class class :level 1 :sex (keyword sex)}))))
 	
     
     

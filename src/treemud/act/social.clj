@@ -15,7 +15,6 @@
 	      [treemud.world :as world]))
 
 
-
 (defn speak
   "Causes a charater to say something.
 Success:
@@ -32,3 +31,10 @@ Success:
   ([ch speech]
      (event/act (:location ch) :emote ch speech)))
        
+
+
+(defn emote-apon
+  "Causes a character to emote something that involes another."
+  ([ch victim speech]
+   (event/act (:location ch) :emote-apon ch victim speech)))
+   

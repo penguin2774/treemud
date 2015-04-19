@@ -12,7 +12,7 @@
 ** DONE account
    Contains the account managment menu as well as all the account
    creation and managment functions.
-   
+*** BUG PC file is being randomly blanked when server is closed while PC is in play
 ** DONE utils
    Holds all the utility files such as color
 ** DONE command

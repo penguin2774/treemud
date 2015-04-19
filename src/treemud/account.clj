@@ -5,7 +5,7 @@
 ;;   |   |   |-' |-'     |   | |  | |  |  ;;
 ;;   o   o   o-o o-o     o   o o--o  o-o  ;;
 ;;                                        ;;
-;; COPYRIGHT © 2010 Nathanael Cunningham  ;;
+;; COPYRIGHT Â© 2010 Nathanael Cunningham  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -42,8 +42,9 @@
 (defn login 
   "Adds account to the set of logged in accounts."
   [account]
-  (swap! *accounts* conj account)
-  account)
+  (if-not (contains? (set (map (fn [x] (:name @x)) @*accounts*)) (:name @account))
+    (do (swap! *accounts* conj account)
+        account)))
 
 (defn logout 
   "Removes account from the set of logged in accounts."

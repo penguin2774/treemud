@@ -5,7 +5,7 @@
 ;;   |   |   |-' |-'     |   | |  | |  |  ;;
 ;;   o   o   o-o o-o     o   o o--o  o-o  ;;
 ;;                                        ;;
-;; COPYRIGHT © 2010 Nathanael Cunningham  ;;
+;; COPYRIGHT Â© 2010 Nathanael Cunningham  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Contains the Nanny fuction, the loop for logins, account creation
 ;; 

@@ -5,7 +5,7 @@
 ;;   |   |   |-' |-'     |   | |  | |  |  ;;
 ;;   o   o   o-o o-o     o   o o--o  o-o  ;;
 ;;                                        ;;
-;; COPYRIGHT © 2010 Nathanael Cunningham  ;;
+;; COPYRIGHT Â© 2010 Nathanael Cunningham  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; :author Nathanael Cunningham
 ;; :doc Holds the command parser.

@@ -55,6 +55,30 @@
 	looker (world/to-obj looker)]
     (:sex obj)))
 
+(defn noun-proper [person looker]
+  (if (= person looker)
+    "you"
+    (name person looker)))
+
+(defn noun-proper-capital [person looker]
+  (if (= person looker)
+    "You"
+    (clojure.string/replace-first (name person looker)
+                                  #"\w+"
+                                  clojure.string/capitalize)))
+
+
+(defn his-her
+  "Gets the \"his/her\" string based on what the looker can see."
+  [obj looker]
+  (let [obj (world/to-obj obj)
+	looker (world/to-obj looker)]
+    (if (= obj looker)
+      "your"
+      (case (:sex obj)
+        :female "her"
+      :male "his"))))
+
 
 (defn find-in 
   "Finds an object named by input inside obj based on what looker can see.

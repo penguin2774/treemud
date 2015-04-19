@@ -62,3 +62,44 @@
    
 ** utils
    Holds all the utility files such as color
+
+** npc
+   Holds all NPC action/reaction system components
+   
+   All NPC actions are responses to events that are queued in
+   there :pending-actions vector.
+   
+   :tick is an event for time's base unit passing
+   
+   :timer indicates a preset time period elapsing.
+   
+*** Event-handling / npc-soul-multiplexer
+    :behaviors field on mobiles in the .area files contain vectors of 
+    function names that are behavior events. Each handle an arbitrary
+    number of events.
+    Each function will be called for every event the NPC is subject of
+    or is able to detect.
+    Each function can return a vector of pending-actions to be added
+    to the back of the pending-actions queue.
+    There is no way for one behavior to prevent another down the line
+    from doing something about an event as well so it is up to the
+    builder no to pair to many like behaviors together to prevent npcs
+    acting crazy. 
+    
+*** Behaviors
+    Behaviors should be functions that operate on a specific group of
+    events in a specific theme. 
+    examples:
+    wanderer - makes the NPC wonder around the area slowly at random.
+    aggressive - attacks any PC that it detects.
+    coward - attempts to repeatedly flee if attacked.
+    
+    More advanced event handling will be implemented in the 'scripted'
+    behavior for the scripting system.
+    
+*** pending-actions vector
+    Pending actions are [functions & args] vectors that have side effects. They will be
+    called one by one by the NPC action thread. 
+    Note: NPCs should not directly change any world values excluding
+    there own. Instead they should use act functions like PC commands.
+    Action functions are the NPC analogy to PC Commands.

@@ -5,7 +5,7 @@
 ;;   |   |   |-' |-'     |   | |  | |  |  ;;
 ;;   o   o   o-o o-o     o   o o--o  o-o  ;;
 ;;                                        ;;
-;; COPYRIGHT © 2010 Nathanael Cunningham  ;;
+;; COPYRIGHT Â© 2010 Nathanael Cunningham  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Contains the event system, as well as the act function, which is essential for act/x functions.
 (ns treemud.event
@@ -108,6 +108,51 @@ other: when the cause isn't the same as the pc being informed, this part is exec
   "Colors the string based on cd, only use-able in a def-event-handler."
   [cd & str]
   `(color/color-str *user* ~cd ~@str))
+
+
+
+(defn event-string-replace 
+  "Replaces keywords in the col in the form of :target.object-data-function.
+  object data functions, such as object/name or object/him-her must be in the form:
+  subject viewer. Invalid function names will throw a 'ClassNotFoundException'"
+  [msg-col viewer cause & victims]
+  (clojure.string/join (map (fn  [x]
+                               (cond 
+                                 (string? x) x
+                                 (keyword? x) (let [[target f] (clojure.string/split (str x) #"\.")]
+                                                ((eval (symbol "treemud.world.object" f)) 
+                                                 (cond 
+                                                   (= target  ":self") cause
+                                                   (= target  ":victim") (first victims)
+                                                   (= target  ":other") (second victims)
+                                                   (re-matches #":victim([0-9]+)" target ) (nth victims (Integer. (second  (re-matches #"victim([0-9]+)" target )))))
+                                                 viewer))
+                                 (or (list? x) (vector? x)) 
+                                 ((fn eval-event-fun [[f & args]]
+                                    (let [args-evaled (map (fn [target]
+                                                             (cond 
+                                                               (= target :viewer) viewer
+                                                               (= target  :self) cause
+                                                               (= target  :victim) (first victims)
+                                                               (= target  :other) (second victims)
+                                                               (re-matches #":victim([0-9]+)" (str target)) 
+                                                               (nth victims 
+                                                                    (Integer. 
+                                                                     (second  (re-matches #"victim([0-9]+)" (str target) ))))
+                                                               (and  (or  (list? target) (vector? target)) 
+                                                                     (fn? (first target))) 
+                                                               (eval-event-fun target)
+                                                               true target)) args)]
+                                      (apply f args-evaled))) x)
+                                 true (str x)))
+                             msg-col)))
+
+
+
+
+
+
+
 ;; A work in progress...
 ;; (defn mud-str [ch objs & strs]
 ;;   (let [objs (vec objs)

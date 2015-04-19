@@ -46,3 +46,10 @@ happen."
 
 
 (def-command do-emote "emote" :rest)
+
+
+
+
+(event/def-event-handler :emote-apon [ch cause victim speech]
+  (event/tellln (event/event-string-replace speech ch cause victim))
+  (event/tellln (event/event-string-replace speech ch cause victim)))

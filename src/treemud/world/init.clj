@@ -10,7 +10,8 @@
 ;; Functions for initializing objects
 
 (ns treemud.world.init
-  (:require [treemud.consts :as consts])
+  (:require [treemud.consts :as consts]
+            [treemud.npc :as npc])
   (:import [java.util UUID] ))
 
 (def room-defaults {:name "A generic room"
@@ -39,6 +40,10 @@
 			      :int 10
 			      :wis 10
 			      :cha 10}
+
+                      :soul 'treemud.npc/npc-soul-multiplexer
+                      :behaviors []
+
 		      :contents #{}
 		      :ac 10
 		      :skills {:spot 4
@@ -85,8 +90,17 @@ with PC's saved inventory, which are not considered"
   (assert (and (@world vname) (= (:type @(@world vname)) :mobile) ))
   (dosync 
    (let [obj (ref (let [mobile (merge mobile-defaults @(@world vname))]
+                    ; Sanity Checking
+                    (do (doseq [b (:behaviors mobile)]
+                          (if-not  (fn? (npc/lookup-behavior b))
+                            (throw (RuntimeException. (format "Behavior %s is not defined." (str b)))))))
+                    (assert (fn? (var-get (resolve (:soul mobile)))))
+                    ; Non-serializable conversion/instance creation.
+                    ; (Randomization stuff should go here.)
 		    (assoc mobile :vname (create-vname vname)
-			   :location loc)))
+			   :location loc
+                           :soul (var-get (resolve (:soul mobile))))
+                    ))
 	 loc (@world loc)]
      (assert loc)
      (alter world assoc (:vname @obj) obj)
