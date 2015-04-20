@@ -96,7 +96,6 @@
     1. Outer
     2. Under
 
-       
 * Weapons
 1. Sword
    1. Longsword   
@@ -236,3 +235,7 @@ Room sub-locations
 
 
 
+* Tick system
+  Thread calls fns in a (ref {symbol fn}) global hash var
+  Tick-fns are defined in a macro that keeps the fn's namespace
+  Mechanisim for makeing sure thread is only created once.

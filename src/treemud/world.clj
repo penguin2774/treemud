@@ -47,20 +47,20 @@
 	       new-world)) world world)))
 
 (defonce ^{:doc "The master world hash, all game objects are here.
-hashed by there vname."} *the-world* (ref (initiate-world)))
+hashed by there vname."} the-world (ref (initiate-world)))
 (defonce ^{:doc "A set of all pcs logged in."
-	   :private true} *pcs* (ref #{}))
+	   :private true} pcs (ref #{}))
 (defonce ^{:doc "A hash of all PC's mobile to there user hashes."
-	   :private true} *pcs-to-users* (ref {}))
+	   :private true} pcs-to-users (ref {}))
 
 (defn lookup 
   "Returns the ref of x, x can be a vname or a object map"
   [x]
   (cond
    (symbol? x)
-   (@*the-world* x)
+   (@the-world x)
    (map? x)
-   (@*the-world* (:vname x))))
+   (@the-world (:vname x))))
 
 
 (defn to-obj 
@@ -98,14 +98,14 @@ x can be its vname, its hash, or its ref"
   "Gets the user logged in on mobile, or nil if no ones logged in on it."
   [vname]
   (assert (or (map? vname) (symbol? vname)))
-  (*pcs-to-users* (if (map? vname)
+  (pcs-to-users (if (map? vname)
 		    (:vname vname)
 		    vname)))
 
 (defn object?
   "Returns true if the object is an object in the world."
   [obj]
-  (and obj (map? obj) (:vname obj) (*the-world* (:vname obj))))
+  (and obj (map? obj) (:vname obj) (the-world (:vname obj))))
 
 (defn mobile? 
   "Returns true if obj is a mobile (and an object in the world)"
@@ -128,10 +128,10 @@ x can be its vname, its hash, or its ref"
 pretty-prints an object in the world, or the hole world, with a print level of 8 (to keep from recursing to much)"
   ([]
      (with-bindings {#'*print-level* 8}
-       (clojure.pprint/pprint @*the-world*)))
+       (clojure.pprint/pprint @the-world)))
   ([vname]
      (with-bindings {#'*print-level* 8}
-       (clojure.pprint/pprint (@*the-world* vname)))))
+       (clojure.pprint/pprint (@the-world vname)))))
 
 
 
@@ -160,15 +160,15 @@ pretty-prints an object in the world, or the hole world, with a print level of 8
   [user pc items]
   (dosync
    (let [{ch :character} user
-         new-loc (@*the-world* (:location @ch))]
+         new-loc (@the-world (:location @ch))]
  
      (alter new-loc assoc  :contents (conj (:contents @new-loc) (:vname @ch)))
      (alter ch assoc :soul soul/pc-soul)
-     (alter *the-world* assoc (:vname @ch) ch)
+     (alter the-world assoc (:vname @ch) ch)
      (doseq [item items]
-       (alter *the-world* assoc (:vname @item) item))
-     (alter *pcs* conj ch)
-     (commute *pcs-to-users* assoc (:vname @ch) user))))
+       (alter the-world assoc (:vname @item) item))
+     (alter pcs conj ch)
+     (commute pcs-to-users assoc (:vname @ch) user))))
 
 ;(hooks/def-hook pc-leave-world)
 
@@ -180,15 +180,15 @@ for normal dismissing of users call (disconnect user) or (disconnect (:user @ch)
    (dosync
     (let [{ch :character} user
           items (map to-obj-ref (contents-set pc))
-          loc (@*the-world* (:location @ch))]
+          loc (@the-world (:location @ch))]
       
       (alter loc assoc :contents (disj (:contents @loc) (:vname @ch)))
      (alter ch dissoc :soul)
-     (alter *the-world* dissoc  (:vname @ch))
+     (alter the-world dissoc  (:vname @ch))
      (doseq [item items]
-       (alter *the-world* dissoc (:vname @item)))
-     (alter *pcs* disj ch)
-     (commute *pcs-to-users* dissoc (:vname @ch))
+       (alter the-world dissoc (:vname @item)))
+     (alter pcs disj ch)
+     (commute pcs-to-users dissoc (:vname @ch))
      [(:account user) ch (map deref items)])))
   user)
 

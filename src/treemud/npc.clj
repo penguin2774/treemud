@@ -11,8 +11,6 @@
 
 (ns treemud.npc
   (:require [clojure.tools.logging :as log]
-
-            [treemud.world.change :as world-change]
             [rielib.utils :as utils]))
 
 

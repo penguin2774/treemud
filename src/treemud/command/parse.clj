@@ -13,7 +13,7 @@
 (ns 
   treemud.command.parse)
 
-(defonce *commands* (atom {}))
+(defonce commands (atom {}))
 
 
 (declare compair-argsets)
@@ -32,10 +32,10 @@ args can be:
   [fn & argset]
   (assert (string? (first argset)))
   (let [letter (nth (first argset) 0)
-	command-set (@*commands* letter)]
+	command-set (@commands letter)]
     (if command-set
-      (reset! *commands* (assoc @*commands* letter (assoc command-set argset fn)))
-      (reset! *commands* (assoc @*commands* letter 
+      (reset! commands (assoc @commands letter (assoc command-set argset fn)))
+      (reset! commands (assoc @commands letter 
 			      (sorted-map-by compair-argsets argset fn))))))
       
 
@@ -47,7 +47,7 @@ args can be:
 returns its function if found, otherwise nil."
   [input]
   (if-let [cmds (and (not (empty? input))
-		     (@*commands* (nth input 0)))]
+		     (@commands (nth input 0)))]
     (let [cmd (re-find #"\w+" input)
 	  args (.trim (.substring input (count cmd)))]
     (some (fn [[cmd-argset cmd-fn]]

@@ -9,6 +9,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns treemud.act.inventory
+  (:refer-clojure :exclude [get drop])
   (:use contrib.except)
   (:require [treemud.world :as world]
 	    [treemud.world.change :as change]

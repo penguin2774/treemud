@@ -11,7 +11,8 @@
 ;; game computations into consideration.
 
 (ns treemud.world.object
-  (:refer-clojure :exclude [name])
+
+  (:refer-clojure :exclude [name short])
   (:use contrib.except)
   (:require [treemud.world :as world]))
 

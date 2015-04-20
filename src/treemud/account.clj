@@ -17,7 +17,7 @@
 
 
 ;; holds all functions relating to accounts and the account managment menu.
-(def *accounts* (atom #{}))
+(def accounts (atom #{}))
 
 (defn create 
   "Creates an account, and hashes the password."
@@ -42,14 +42,14 @@
 (defn login 
   "Adds account to the set of logged in accounts."
   [account]
-  (if-not (contains? (set (map (fn [x] (:name @x)) @*accounts*)) (:name @account))
-    (do (swap! *accounts* conj account)
+  (if-not (contains? (set (map (fn [x] (:name @x)) @accounts)) (:name @account))
+    (do (swap! accounts conj account)
         account)))
 
 (defn logout 
   "Removes account from the set of logged in accounts."
   [account]
-  (swap! *accounts* disj account)
+  (swap! accounts disj account)
   account)
 
 

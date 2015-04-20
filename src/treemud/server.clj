@@ -8,7 +8,7 @@
 ;; COPYRIGHT © 2010 Nathanael Cunningham  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; The server file! master of all things server.
-;; Contains the server socet, user socket handler function and the master user list (*users*)
+;; Contains the server socet, user socket handler function and the master user list (users)
 ;; as well the root main function.
 ;; to start the server, use (utils/launch-thread main) (inside this namespace)
 
@@ -41,7 +41,7 @@
 	   :private true}
   shutdown-switch (atom false))
 (defonce ^{:doc "Set of all connected users."} 
-  *users* (atom #{}))
+  users (atom #{}))
 
  
 (defn create-server 
@@ -89,7 +89,7 @@ also does the connection, and login/out logging, and error logging for non-comma
   [ins outs addr]
   (log/info (str "User connected from " addr"."))
   (let [user {:in ins :out outs :thread (Thread/currentThread) :ansi-color? true}]
-    (swap! *users* conj user)
+    (swap! users conj user)
     (welcome user)
     (try
      (if-let [account (nanny/nanny user)]
@@ -116,7 +116,7 @@ also does the connection, and login/out logging, and error logging for non-comma
      (catch Exception e
        (log/fatal e (str "User " addr " booted by uncought exception.")  ))
      (finally
-      (swap! *users* disj user)
+      (swap! users disj user)
       (log/info (str "User " addr " dismissed."))
       (goodbye user)))))
       
@@ -146,7 +146,7 @@ note: not every well tested..."
     (letfn [(shutdown-server []
 			     (print "Shutting down server...")
 			     (.close @server)
-			     (doseq [user @*users*]
+			     (doseq [user @users]
 			       (disconnect user "Mud is shutting down NOW! bbl."))
 			     (println "Done"))]
       (reset! shutdown-switch false)

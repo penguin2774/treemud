@@ -13,9 +13,8 @@
 
 
 (ns treemud.server.comm
-  (:use contrib.except
-        clojure.string
-	treemud.utils.color))
+  (:require [contrib.except :as except])
+  (:use treemud.utils.color))
 	
 
 (defn pad-return 
@@ -69,7 +68,7 @@ makes sure to resend the prompt after body. If your an event handler, it should 
   (io!
    (let [result (.readLine (:in user))]
       (if (or (Thread/interrupted) (nil? result))
-       (throwf java.io.IOException "User disconnected.")
+       (except/throwf java.io.IOException "User disconnected.")
        result))))
 
 (defn prompt
@@ -105,5 +104,5 @@ makes sure to resend the prompt after body. If your an event handler, it should 
 	(do 
 	  (.close (:in user))
 	  (.close (:out user))
-	  (throwf java.io.IOException "User disconnected."))))))
+	  (except/throwf java.io.IOException "User disconnected."))))))
 

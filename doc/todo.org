@@ -40,6 +40,43 @@
    1. basic sanity checking,
    2. calling world changing functions (found in world/change)
    3. and sending out result events
+** CODE npc
+   NPC event handler system.
+*** DONE npc-soul-multiplexer
+    Takes events with event/act :soul calls and calls all behavior
+    functions in vector.
+*** DONE behaviors definition and access.
+    Processes events into actions for the npc to take or changes to
+    the npc's state.
+    Held in a refed hash table so that they can be redefined on the
+    fly but still have the symbols namespace association.
+    
+*** TEST process actions thread
+    Thread launcher that launches one (and only one) thread that will
+    call all actions in a global vector queue.
+    thread process-actions! function should catch exceptions and log
+    them.
+    All process fns are in the form [fn self args] where:
+    fn - function to be called 
+    self - mobile's hash data 
+    args - a seq of any further arguments the function needs.
+    
+    Intended for treemud.act functions. But may also simply change the
+    mobiles state. 
+    Making a transaction is up to the fn.
+
+
+    
+** CODE tick
+*** CODE master-tick thread function
+    Needs to:
+    - [ ] Take threads from a global thread hash ref
+    - [ ] catch and log thread exceptions
+    - [ ] log if tick fn execution takes longer then the tick sleep time.
+
+     
+     
+
 * Basic Commands
 ** Senses/Info
 *** DONE look
@@ -1001,6 +1038,12 @@ Note:  Changing your deity now affects your mental state.
 See also 'GROUP DISPLAY'
 
 * Rest
+* Uncategorized Bugs
+** DONE Clojure warning
+WARNING: get already refers to: #'clojure.core/get in namespace: treemud.act.inventory, being replaced by: #'treemud.act.inventory/get
+** DONE Clojure warning
+WARNING: drop already refers to: #'clojure.core/drop in namespace: treemud.act.inventory, being replaced by: #'treemud.act.inventory/drop
+
 
 
 
