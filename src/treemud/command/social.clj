@@ -14,7 +14,8 @@
   (:require [treemud.server.comm :as comm]
 	    [treemud.event :as event]
 	    [treemud.world.object :as object]
-	    [treemud.act.social :as act]))
+	    [treemud.act.social :as act]
+            [clojure.string :as string]))
 
 
 
@@ -38,11 +39,11 @@ Says something to everyone in the room.
 Performs a gesture or action, which doesn't effect the game, but is none the less considered to have
 happen."
   [user cmd args]
-  (act/emote @(:character user) args))
+  (act/emote @(:character user) [[object/noun-proper-capital :self :viewer] " " args]))
 
 (event/def-event-handler :emote [ch cause emotion]
-  (event/tellln "You %s." emotion)
-  (event/tellln "%s %s." (object/name cause ch) emotion))
+  (event/tellln (event/event-string-replace emotion ch cause))
+  (event/tellln (event/event-string-replace emotion ch cause)))
 
 
 (def-command do-emote "emote" :rest)

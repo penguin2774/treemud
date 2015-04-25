@@ -49,3 +49,14 @@ No such exit
 	  (event/act new :entered-room ch dir))
 	(event/act ch :cant-move ch :no-such-exit)))))
       
+;; (defn teleport 
+;;   [ch loc]
+;;   (throw-if-not (world/mobile? ch) IllegalArgumentException "Only mobiles can use act/move") 
+;;   (letfn [(perform-move! 
+;;             (dosync 
+;;              (let [ch (world/to-obj-ref ch)
+;;                    old-loc (world/to-obj-ref (:location @ch))
+;;                    new-loc (world/to-obj-ref loc)]
+;;                (change/location ch new-loc)
+;;                [@ch @old-loc @new-loc]
+;;                :no-exit)))]))

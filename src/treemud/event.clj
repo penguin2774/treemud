@@ -144,6 +144,7 @@ other: when the cause isn't the same as the pc being informed, this part is exec
                                                                (eval-event-fun target)
                                                                true target)) args)]
                                       (apply f args-evaled))) x)
+                                 (map? x) nil ; maps are used for adding data for mobiles to understand string easier.
                                  true (str x)))
                              msg-col)))
 

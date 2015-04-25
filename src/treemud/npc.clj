@@ -14,7 +14,7 @@
             [rielib.utils :as utils]))
 
 
-(def ^{:doc "Global behavior table. Holds a ref to all the defined behavior functions and there associated symbol."}
+(defonce ^{:doc "Global behavior table. Holds a ref to all the defined behavior functions and there associated symbol."}
   npc-behavior-table (ref {}))
 
 (def npc-pending-actions ^{:doc "NPC Actions waiting to happen."} (ref []))
@@ -56,40 +56,51 @@ Behavior functions should not modify the world directly but use resulting action
 
 (defn npc-soul-multiplexer 
   "Calls all behavior functions on an NPC until one returns true or they are exhausted.
-Placed on mobiles as :soul function. Should not be called directly."
+Placed on mobiles as :soul function. Should not be called directly.
+NPCs, unlike pcs, are never informed of events triggered by themselves."
   [e self cause & data]
 
   (assert (= (:type self) :mobile))
   (if-let [behaviors (:behaviors self)]
-    (let [responces (mapcat (fn [behavior]
-                              (apply (lookup-behavior behavior) e self cause data)) behaviors)]
-      (dosync (alter npc-pending-actions  #(vec (concat % responces)))))))
+    (if-not (= cause self) ; npcs are never informed of events caused by themselves.
+      (let [responces (mapcat (fn [behavior]
+                                (apply (lookup-behavior behavior) e self cause data)) behaviors)]
+        (dosync (alter npc-pending-actions  #(vec (concat % responces))))))))
 
-(defn- process-actions! []
+(def process-action-thread-continue (atom true))
+
+(defn action [fn self & args]
+  {:fn fn :mobile self :args args})
+
+(defn- process-actions! 
+  "Processes all the action in the npc-peading-action queue and catching and logging any errors. Designed to be run as the function for the npc-process-action-thread"
+  []
   (letfn [(pull-next-action []
             (dosync (let [result (first @npc-pending-actions)]
-                      (alter npc-pending-actions next)
+                      (alter npc-pending-actions (fn [x] (or (next x) [])))
                       result)))]
+    (log/info "npc-process-action-thread launched.")
     (loop [action (pull-next-action)]
       (if action 
-        (dosync 
-         (let [{f :fn self :mobile args :args} action]
-           
-           (try 
-             (assert (and f self))
-             (assert (=  (:type self) :mobile))
-             (assert (fn? f))
+        (let [{f :fn self :mobile args :args} action]
+          
+          (try 
+            (assert (and f self))
+            (assert (=  (:type self) :mobile))
+            (assert (fn? f))
 
 
-             (apply f self args)
-             (catch Exception e
-               (log/error e (format "An error occured when npc '%s' tried '%s'. Args: [%s]" (:vname self) f args)))
-             (catch AssertionError e 
-               (log/error e (format "Npc '%s' failed an assertion when they tried '%s'. Args: [%s]" (:vname self) f args)))
-             (finally 
-                      (log/error  "Unknown error with Npc '%s' while attempting to call '%s' args: [%s]" (:name self) f args)))))
+            (apply f self args)
+            (catch Exception e
+              (log/error e (format "An error occured when npc '%s' tried '%s'. Args: [%s]" (:vname self) f args)))
+            (catch AssertionError e 
+              (log/error e (format "Npc '%s' failed an assertion when they tried '%s'. Args: [%s]" (:vname self) f args)))
+            (finally 
+              (log/error  "Unknown error with Npc '%s' while attempting to call '%s' args: [%s]" (:name self) f args))))
         (Thread/sleep 100)) ;; if no actions, sleep.
-      (recur (pull-next-action)))))
+      (if @process-action-thread-continue
+        (recur (pull-next-action))))
+    (log/info "npc-process-action-thread exiting. (Shouldn't realy happen)")))
 
 (defonce npc-process-thread-running (atom false))
 
