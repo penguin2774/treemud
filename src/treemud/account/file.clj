@@ -114,7 +114,7 @@ returns a reference to it."
            pc-file (doto (java.io.File. (str "accounts/" (:name @account) "/" (:name @pc) ".pc"))
                      (.createNewFile))
            objs-to-file (dosync (cons (dissoc @pc :soul) items) )]
-       
+       (assert objs-to-file (first objs-to-file))
        (with-open [out (writer pc-file)]
          (doseq [cobj objs-to-file]
            (pprint cobj out)))
