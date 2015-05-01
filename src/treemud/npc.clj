@@ -11,7 +11,8 @@
 
 (ns treemud.npc
   (:require [clojure.tools.logging :as log]
-            [rielib.utils :as utils]))
+            [rielib.utils :as utils]
+            [contrib.except :as except]))
 
 
 (defonce ^{:doc "Global behavior table. Holds a ref to all the defined behavior functions and there associated symbol."}
@@ -65,7 +66,14 @@ NPCs, unlike pcs, are never informed of events triggered by themselves."
     (if-not (= cause self) ; npcs are never informed of events caused by themselves.
       (let [responces (mapcat (fn [behavior]
                                 (apply (lookup-behavior behavior) e self cause data)) behaviors)]
-        (dosync (alter npc-pending-actions  #(vec (concat % responces))))))))
+        
+        (dosync (alter npc-pending-actions  #(vec (concat % (cond
+                                                              (and  (seq? responces) (every? map? responces))
+                                                              responces
+                                                              (map? responces)
+                                                              [responces]
+                                                              :else
+                                                              (except/throwf "Invalid npc action %s" responces))))))))))
 
 (def process-action-thread-continue (atom true))
 
@@ -94,13 +102,13 @@ NPCs, unlike pcs, are never informed of events triggered by themselves."
             (catch Exception e
               (log/error e (format "An error occured when npc '%s' tried '%s'. Args: [%s]" (:vname self) f args)))
             (catch AssertionError e 
-              (log/error e (format "Npc '%s' failed an assertion when they tried '%s'. Args: [%s]" (:vname self) f args)))
-            (finally 
-              (log/error  "Unknown error with Npc '%s' while attempting to call '%s' args: [%s]" (:name self) f args))))
+              (log/error e (format "Npc '%s' failed an assertion when they tried '%s'. Args: [%s]" (:vname self) f args)))))
         (Thread/sleep 100)) ;; if no actions, sleep.
       (if @process-action-thread-continue
         (recur (pull-next-action))))
     (log/info "npc-process-action-thread exiting. (Shouldn't realy happen)")))
+
+
 
 (defonce npc-process-thread-running (atom false))
 
@@ -111,5 +119,11 @@ NPCs, unlike pcs, are never informed of events triggered by themselves."
     (utils/launch-thread process-actions!)))
 
 
+(defn restart-npc-action-thread []
+  (reset! process-action-thread-continue false)
+  (Thread/sleep 115)
+  (reset! npc-process-thread-running false)
+  (reset! process-action-thread-continue true)
+  (launch-npc-process-actions-thread))
 
   
