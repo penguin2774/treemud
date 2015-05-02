@@ -38,7 +38,7 @@
     (loop [command (comm/prompt user (comm/user-command-prompt user))]
       (if command 
 	(if (empty? command)
-	  (comm/prompt user (comm/user-command-prompt user))
+	  (recur (comm/prompt user (comm/user-command-prompt user)))
 	  (do 
 	  
 	    (try
