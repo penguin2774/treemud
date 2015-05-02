@@ -12,7 +12,11 @@
 (ns treemud.npc
   (:require [clojure.tools.logging :as log]
             [rielib.utils :as utils]
-            [contrib.except :as except]))
+            [contrib.except :as except]
+            [treemud.world :as world]
+            [treemud.world.init :as init]
+            [treemud.event :as event]
+            [treemud.tick :as tick]))
 
 
 (defonce ^{:doc "Global behavior table. Holds a ref to all the defined behavior functions and there associated symbol."}
@@ -54,7 +58,6 @@ Behavior functions should not modify the world directly but use resulting action
 
 
 
-
 (defn npc-soul-multiplexer 
   "Calls all behavior functions on an NPC until one returns true or they are exhausted.
 Placed on mobiles as :soul function. Should not be called directly.
@@ -75,7 +78,22 @@ NPCs, unlike pcs, are never informed of events triggered by themselves."
                                                               :else
                                                               (except/throwf "Invalid npc action %s" responces))))))))))
 
-(def process-action-thread-continue (atom true))
+
+(init/def-initializer npc-soul :mobile 
+  [mobile]
+  ;; Sanity Checking
+  (doseq [b (:behaviors mobile)]
+    (if-not  (fn? (lookup-behavior b))
+      (throw (RuntimeException. (format "Behavior %s is not defined." (str b))))))
+  (assoc mobile :soul npc-soul-multiplexer))
+
+
+
+
+(defonce process-action-thread-continue (atom true))
+(defonce npc-process-thread-running (atom false))
+
+
 
 (defn action [fn self & args]
   {:fn fn :mobile self :args args})
@@ -106,11 +124,11 @@ NPCs, unlike pcs, are never informed of events triggered by themselves."
         (Thread/sleep 100)) ;; if no actions, sleep.
       (if @process-action-thread-continue
         (recur (pull-next-action))))
-    (log/info "npc-process-action-thread exiting. (Shouldn't realy happen)")))
+    (log/info "npc-process-action-thread exiting. (Shouldn't realy happen)")
+    (reset! npc-process-thread-running false)))
 
 
 
-(defonce npc-process-thread-running (atom false))
 
 (defn launch-npc-process-actions-thread
   "Launches the process actions thread."
@@ -119,11 +137,19 @@ NPCs, unlike pcs, are never informed of events triggered by themselves."
     (utils/launch-thread process-actions!)))
 
 
-(defn restart-npc-action-thread []
+(defn restart-npc-action-thread 
+  "Stops the npc action thread, waits for it to quit then launches another.
+Intended to be used by the repl exclusivly for changing the process-actions! function."
+  []
   (reset! process-action-thread-continue false)
-  (Thread/sleep 115)
-  (reset! npc-process-thread-running false)
+  (loop []
+    (if @npc-process-thread-running
+      (do  (Thread/sleep 115)
+           (recur))))
   (reset! process-action-thread-continue true)
   (launch-npc-process-actions-thread))
 
-  
+(tick/def-tick tick-npcs 1
+  (let [npcs (filter #(deref (world/mobile? %))  @world/the-world)]
+    (doseq [npc npcs]
+      (event/act npc :tick npc))))

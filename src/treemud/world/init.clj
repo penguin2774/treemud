@@ -11,7 +11,7 @@
 
 (ns treemud.world.init
   (:require [treemud.consts :as consts]
-            [treemud.npc :as npc])
+            [clojure.tools.logging :as log ])
   (:import [java.util UUID] ))
 
 (def room-defaults {:name "A generic room"
@@ -65,9 +65,21 @@ with PC's saved inventory, which are not considered"
 	  
 		 
 
+(defonce initializers (ref {}))
+
+
+
+
+(defmacro def-initializer [name type & fn-desc]
+  (assert (contains? #{:mobile :item :pc} type))
+  `(dosync
+    (alter initializers assoc-in [~type '~(symbol (str *ns*) (str name))] (fn ~name ~@fn-desc))))
+
            
 
 ;; TODO Items in :contents need to be instanced too.
+
+
 
 (defn init-item!
   "Creates a new item in the world using an existing one as a base."
@@ -76,12 +88,18 @@ with PC's saved inventory, which are not considered"
   (dosync 
    (let [obj (ref (let [item (merge item-defaults @(@world vname))]
 		    (assoc item :vname (create-vname vname)
-			   :location loc)))
+                                   :location loc)))
 	 loc (@world loc)]
      (assert loc)
      (alter world assoc (:vname @obj) obj)
      (alter loc assoc :contents (conj (:contents @loc) (:vname @obj)))
-     obj)))
+     (ref-set obj (reduce (fn [obj [name f]]
+                            (let [result (f obj)]
+                              (assert (and result (map? result)) (format "Initializer [%s] didn't return hash map for item [%s]." name (obj :name)))
+                              result))
+                          @obj
+                          (@initializers :item))))))
+
 
 
 (defn init-mobile!
@@ -90,22 +108,18 @@ with PC's saved inventory, which are not considered"
   (assert (and (@world vname) (= (:type @(@world vname)) :mobile) ))
   (dosync 
    (let [obj (ref (let [mobile (merge mobile-defaults @(@world vname))]
-                    ; Sanity Checking
-                    (do (doseq [b (:behaviors mobile)]
-                          (if-not  (fn? (npc/lookup-behavior b))
-                            (throw (RuntimeException. (format "Behavior %s is not defined." (str b)))))))
-                    (assert (fn? (var-get (resolve (:soul mobile)))))
-                    ; Non-serializable conversion/instance creation.
-                    ; (Randomization stuff should go here.)
-		    (assoc mobile :vname (create-vname vname)
-			   :location loc
-                           :soul (var-get (resolve (:soul mobile))))
-                    ))
+                     (assoc mobile :vname (create-vname vname)
+			   :location loc)))
 	 loc (@world loc)]
      (assert loc)
      (alter world assoc (:vname @obj) obj)
      (alter loc assoc :contents (conj (:contents @loc) (:vname @obj)))
-     obj)))
+     (ref-set obj (reduce (fn [obj [name f]]
+                            (let [result (f obj)]
+                              (assert (and result (map? result)) (format "Initializer [%s] didn't return hash map for mobile [%s]." name (obj :name)))
+                              result))
+                          @obj
+                          (@initializers :mobile))))))
 
 
 
@@ -113,5 +127,11 @@ with PC's saved inventory, which are not considered"
 (defn init-pc 
   "Initializes the PC for the first time. Done at creation."
   [obj]
-  (merge mobile-defaults obj))
+  (dosync
+   (ref-set obj (reduce (fn [obj [name f]]
+                            (let [result (f obj)]
+                              (assert (and result (map? result)) (format "Initializer [%s] didn't return hash map for pc [%s]." name (obj :name)))
+                              result))
+                          @obj
+                          (@initializers :pc)))))
 

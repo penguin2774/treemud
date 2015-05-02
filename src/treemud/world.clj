@@ -94,6 +94,8 @@ x can be its vname, its hash, or its ref"
    true
    (throw (Exception. (format "Don't know how to get an object from '%s'" x)))))
 
+
+
 (defn get-user
   "Gets the user logged in on mobile, or nil if no ones logged in on it."
   [vname]

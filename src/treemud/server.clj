@@ -104,7 +104,7 @@ also does the connection, and login/out logging, and error logging for non-comma
 	       (world/enter user pc objs)
 	       (log/info  (format "Character login %s from %s" (:name @pc) addr))
 	       (command/prompt user)
-	       (finally 
+	       (finally
 		(world/leave user pc)
 		(log/info  (format "Character logout of %s from %s" (:name @pc) addr))
 		)))))
@@ -114,7 +114,11 @@ also does the connection, and login/out logging, and error logging for non-comma
      (catch java.io.IOException e
        (log/info (str "User disconnected from " addr".")))
      (catch Exception e
-       (log/fatal e (str "User " addr " booted by uncought exception.")  ))
+       (log/fatal e (str "User " addr " booted by uncought exception.")))
+     (catch Error e
+       (log/fatal e (str "User " addr " booted by uncought error.")))
+     (catch Throwable e
+       (log/fatal e (str "User " addr " booted by uncought throwable.")))
      (finally
       (swap! users disj user)
       (log/info (str "User " addr " dismissed."))
