@@ -19,7 +19,7 @@
   "Syntax: save
 Saves the charicter and all their equipment"
   [user command]
-  (file/save-pc (:account user) (:character user) (map world/to-obj (world/contents-set @(:character user) #{})))
+  (file/save-pc @(:account user) @(:character user) (map world/to-obj (:contents @(:character user))))
   (comm/sendln user "Charicter Saved!"))
 
 (defn do-quit 

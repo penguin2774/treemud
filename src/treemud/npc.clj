@@ -66,17 +66,16 @@ NPCs, unlike pcs, are never informed of events triggered by themselves."
 
   (assert (= (:type self) :mobile))
   (if-let [behaviors (:behaviors self)]
-    (if-not (= cause self) ; npcs are never informed of events caused by themselves.
-      (let [responces (mapcat (fn [behavior]
-                                (apply (lookup-behavior behavior) e self cause data)) behaviors)]
-        
-        (dosync (alter npc-pending-actions  #(vec (concat % (cond
-                                                              (and  (seq? responces) (every? map? responces))
-                                                              responces
-                                                              (map? responces)
-                                                              [responces]
-                                                              :else
-                                                              (except/throwf "Invalid npc action %s" responces))))))))))
+    (let [responces (mapcat (fn [behavior]
+                              (apply (lookup-behavior behavior) e self cause data)) behaviors)]
+      
+      (dosync (alter npc-pending-actions  #(vec (concat % (cond
+                                                            (and  (seq? responces) (every? map? responces))
+                                                            responces
+                                                            (map? responces)
+                                                            [responces]
+                                                            :else
+                                                            (except/throwf "Invalid npc action %s" responces)))))))))
 
 
 (init/def-initializer npc-soul :mobile 
@@ -150,6 +149,6 @@ Intended to be used by the repl exclusivly for changing the process-actions! fun
   (launch-npc-process-actions-thread))
 
 (tick/def-tick tick-npcs 1
-  (let [npcs (filter #(deref (world/mobile? %))  @world/the-world)]
+  (let [npcs (filter world/npc? (vals @world/the-world))]
     (doseq [npc npcs]
       (event/act npc :tick npc))))

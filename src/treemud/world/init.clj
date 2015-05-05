@@ -41,9 +41,6 @@
 			      :wis 10
 			      :cha 10}
 
-                      :soul 'treemud.npc/npc-soul-multiplexer
-                      :behaviors []
-
 		      :contents #{}
 		      :ac 10
 		      :skills {:spot 4
@@ -51,6 +48,11 @@
 		      :feats []
 		      :location consts/default-room})
 
+(def npc-defaults (merge mobile-defaults
+                        {}))
+
+(def pc-defaults (merge mobile-defaults 
+                        {}))
 (defn init-room 
   "Initializes the room, used to ready it for *the-world*"
   [obj world]
@@ -98,16 +100,17 @@ with PC's saved inventory, which are not considered"
                               (assert (and result (map? result)) (format "Initializer [%s] didn't return hash map for item [%s]." name (obj :name)))
                               result))
                           @obj
-                          (@initializers :item))))))
+                          (@initializers :item)))
+     obj)))
 
 
 
-(defn init-mobile!
+(defn init-npc!
   "Creates a new mobile in the world using an existing one as a base."
   [vname world loc]
   (assert (and (@world vname) (= (:type @(@world vname)) :mobile) ))
   (dosync 
-   (let [obj (ref (let [mobile (merge mobile-defaults @(@world vname))]
+   (let [obj (ref (let [mobile (merge npc-defaults @(@world vname))]
                      (assoc mobile :vname (create-vname vname)
 			   :location loc)))
 	 loc (@world loc)]
@@ -119,7 +122,8 @@ with PC's saved inventory, which are not considered"
                               (assert (and result (map? result)) (format "Initializer [%s] didn't return hash map for mobile [%s]." name (obj :name)))
                               result))
                           @obj
-                          (@initializers :mobile))))))
+                          (@initializers :mobile)))
+     obj)))
 
 
 
@@ -128,10 +132,10 @@ with PC's saved inventory, which are not considered"
   "Initializes the PC for the first time. Done at creation."
   [obj]
   (dosync
-   (ref-set obj (reduce (fn [obj [name f]]
-                            (let [result (f obj)]
-                              (assert (and result (map? result)) (format "Initializer [%s] didn't return hash map for pc [%s]." name (obj :name)))
-                              result))
-                          @obj
-                          (@initializers :pc)))))
+   (reduce (fn [obj [name f]]
+             (let [result (f obj)]
+               (assert (and result (map? result)) (format "Initializer [%s] didn't return hash map for pc [%s]." name (obj :name)))
+               result))
+           (merge pc-defaults obj)
+           (@initializers :pc))))
 

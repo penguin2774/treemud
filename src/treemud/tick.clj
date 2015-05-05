@@ -55,10 +55,11 @@ ticks is the number of ticks inbetween calls."
   "Launches the master tick thread if not already running, returning the thread object. 
 Otherwise returns nil."
   []
-  (if (swap! master-tick-running not) ; there is no master-tick thread running
+  (if (not @master-tick-running)
     (utils/launch-thread 
      (fn []
        (log/info "master-tick-thread Launching...")
+       (reset! master-tick-running true) ; there is no master-tick thread running
        (loop [last-tick (System/currentTimeMillis) total-ticks 0]
          (master-tick total-ticks)
          (let [elapsed-time (- (System/currentTimeMillis) last-tick)
@@ -68,7 +69,8 @@ Otherwise returns nil."
              (log/warn "More time elapsed running master-tick then sleep time. CPU being worked hard :/ elapsed-time [" elapsed-time "ms]")))
          (if @master-tick-running
            (recur (System/currentTimeMillis) (inc total-ticks))))
-       (log/info "master-tick-thread Exiting...")))))
+       (log/info "master-tick-thread Exiting...")
+       (reset! master-tick-running false)))))
 
 (defn terminate-master-tick-thread []
   (reset! master-tick-running false))

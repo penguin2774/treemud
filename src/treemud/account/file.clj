@@ -68,7 +68,7 @@ returns a reference to it."
       all-objects)))
 
 (defn load-pcs
-  "Loads all PCs owned by account into a {name, ref} hash. Called by the account manager."
+  "Loads all PCs owned by account into a {name, [ch items...]} hash. Called by the account manager."
   [account]
   (let [pc-dir (java.io.File. (str "accounts/" (:name @account) "/"))]
     (if (.exists pc-dir)
@@ -106,19 +106,19 @@ returns a reference to it."
 (defn save-pc
   "Save the pc to his owner's account folder. Creating anything inbetween there as necessary."
   [account pc items]
-     (assert (:name @pc))
-     (assert (:name @account))
-     
-     (let [pc-dir (doto (java.io.File. (str "accounts/" (:name @account)))
-                    (.mkdirs))
-           pc-file (doto (java.io.File. (str "accounts/" (:name @account) "/" (:name @pc) ".pc"))
-                     (.createNewFile))
-           objs-to-file (dosync (cons (dissoc @pc :soul) items) )]
-       (assert objs-to-file (first objs-to-file))
-       (with-open [out (writer pc-file)]
-         (doseq [cobj objs-to-file]
-           (pprint cobj out)))
-       (vector (cons pc  objs-to-file))))
+  (assert (:name pc))
+  (assert (:name account))
+  
+  (let [pc-dir (doto (java.io.File. (str "accounts/" (:name account)))
+                 (.mkdirs))
+        pc-file (doto (java.io.File. (str "accounts/" (:name account) "/" (:name pc) ".pc"))
+                  (.createNewFile))
+        objs-to-file (cons (dissoc pc :soul) items) ]
+    (assert objs-to-file (first objs-to-file))
+    (with-open [out (writer pc-file)]
+      (doseq [cobj objs-to-file]
+        (pprint cobj out)))
+    objs-to-file))
 
 (defn account-exists? 
   "Returns true if user account exists by checking if the .acc file exists."
@@ -136,8 +136,8 @@ returns a reference to it."
 (defn create-pc 
   "Creats the PC for the first time, called by the account manager."
   [account name data]
-  (save-pc account
-           (ref (world.init/init-pc (merge data {:type :mobile
-						 :name name
-						 :vname (symbol (str "pc." (.replace name " " "-")))})))
+  (save-pc @account
+           (world.init/init-pc (merge data {:type :mobile
+                                            :name name
+                                            :vname (symbol (str "pc." (.replace name " " "-")))}))
            []))

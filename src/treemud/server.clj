@@ -97,16 +97,16 @@ also does the connection, and login/out logging, and error logging for non-comma
 	(log/info (format "Account Login of %s from %s" (:name @account) addr))
 	(let [user (assoc user :account account)]
 	  (if-let [pc-objects (account/manage user )] ;; takes pc objects from player file.
-	    (let [pc (ref (first pc-objects))
-                   objs (map ref (rest pc-objects))
-                   user (assoc user :character pc )]
+	    (let [objs (rest pc-objects)
+                  user (assoc user :character (ref (first pc-objects)) )
+                  pc (:character user)]
 	      (try 
-	       (world/enter user pc objs)
-	       (log/info  (format "Character login %s from %s" (:name @pc) addr))
-	       (command/prompt user)
-	       (finally
-		(world/leave user pc)
-		(log/info  (format "Character logout of %s from %s" (:name @pc) addr))
+                (world/enter user objs)
+                (log/info  (format "Character login %s from %s" (:name @pc) addr))
+                (command/prompt user)
+                (finally
+                  (world/leave user)
+                  (log/info  (format "Character logout of %s from %s" (:name @pc) addr))
 		)))))
         (finally 
           (account/logout account)

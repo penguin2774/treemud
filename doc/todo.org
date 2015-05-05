@@ -33,6 +33,10 @@
 ** DONE world
    Contains the functions for world manipulation as well as loading
    area files. It also contains the centeral world hash.
+*** DONE world.init
+**** DONE initializer functions
+**** DONE Getting error when creating new PC
+     Issue with init-pc and save-pc using refrences
 ** DONE act
    Act(tions) are things that are done to the world by something or
    someone. Functions to cause actions are kept in this file.
@@ -40,7 +44,7 @@
    1. basic sanity checking,
    2. calling world changing functions (found in world/change)
    3. and sending out result events
-** BUG npc
+** DONE npc
    NPC event handler system.
 *** DONE npc-soul-multiplexer
     Takes events with event/act :soul calls and calls all behavior
@@ -51,7 +55,7 @@
     Held in a refed hash table so that they can be redefined on the
     fly but still have the symbols namespace association.
     
-*** BUG process actions thread
+*** DONE process actions thread
     Thread launcher that launches one (and only one) thread that will
     call all actions in a global vector queue.
     thread process-actions! function should catch exceptions and log
@@ -65,9 +69,13 @@
     mobiles state. 
     Making a transaction is up to the fn.
 
-**** BUG If behavior returns garbadge or just one action, ruins process queue
+**** DONE If behavior returns garbadge or just one action, ruins process queue
 
-     
+*** DONE tick event sender
+    Sends out tick events to all mobiles.
+    Tick time 1 second
+
+*** DONE Cyclic dependency with treemud.npc and treemud.init
 ** DONE tick
 *** DONE master-tick thread function
     Needs to:

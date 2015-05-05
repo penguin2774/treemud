@@ -18,7 +18,8 @@
 	    [treemud.event.soul :as soul]
 	    [treemud.utils.hooks :as hooks]
             [treemud.account.file :as pc-file]
-	    clojure.pprint))
+	    clojure.pprint
+            [clojure.tools.logging :as log]))
 
 ;; The world hash should be stored here, as well as functions to manipulate it.
 
@@ -48,7 +49,7 @@
 
 (defonce ^{:doc "The master world hash, all game objects are here.
 hashed by there vname."} the-world (ref (initiate-world)))
-(defonce ^{:doc "A set of all pcs logged in."
+(defonce ^{:doc "A set of all pcs logged in. (vnames)"
 	   :private true} pcs (ref #{}))
 (defonce ^{:doc "A hash of all PC's mobile to there user hashes."
 	   :private true} pcs-to-users (ref {}))
@@ -69,15 +70,16 @@ x can be its vname, ref to the hash or the hash it self."
   [x]
   (cond 
    (symbol? x) 
-   (if-let [result @(lookup x)]
-     result
+   (if-let [result (lookup x)]
+     @result
      (throw (Exception. (format "No such object '%s' in world." x))))
-   (some #(= (:type x) %) [:room :item :mobile])
+   (and (map? x) (some #(= (:type x) %) [:room :item :mobile]))
    x
-   (and (instance? clojure.lang.Ref x) (some #(= (x :type) %) [:room :item :mobile]))
+   (and (instance? clojure.lang.Ref x) (contains? #{:room :item :mobile} (:type @x)))
    @x
    true
-   (throw (Exception. (format "Don't know how to get an object from '%s'" x)))))
+   (do (log/error "Couldnt figure out what %s is [x] for to-obj" x (and (instance? clojure.lang.Ref x)) @x)
+       (throw (Exception. (format "Don't know how to get an object from '%s'" x))))))
 
 (defn to-obj-ref 
   "Returns the object's ref from the world hash.
@@ -92,7 +94,8 @@ x can be its vname, its hash, or its ref"
    (and (instance? clojure.lang.Ref x) (some #(= (x :type) %) [:room :item :mobile]))
    x
    true
-   (throw (Exception. (format "Don't know how to get an object from '%s'" x)))))
+   (throw (log/error "Couldnt figure out what %s is [x] for to-obj" x (and (instance? clojure.lang.Ref x)) @x)
+    (Exception. (format "Don't know how to get an object from '%s'" x)))))
 
 
 
@@ -105,24 +108,47 @@ x can be its vname, its hash, or its ref"
 		    vname)))
 
 (defn object?
-  "Returns true if the object is an object in the world."
+  "Returns true if the object is an object in the world database (not necessarly in a room or inventory)"
   [obj]
-  (and obj (map? obj) (:vname obj) (the-world (:vname obj))))
+  (let [obj (to-obj obj)]
+    (if (and obj (map? obj) (:vname obj) (the-world (:vname obj)))
+      true false)))
 
 (defn mobile? 
-  "Returns true if obj is a mobile (and an object in the world)"
+  "Returns true if obj is a mobile and in the world database (not necessarly in a room or active)"
   [obj]
-  (and (object? obj) (= (:type obj) :mobile)))
+  (let [obj (to-obj obj)]
+    (if (and (object? obj) (= (:type obj) :mobile))
+      true false)))
+
+
+(defn pc?
+  "Returns true if obj is a pc (and is loaded in the world and active)"
+  [obj]
+  (let [obj (to-obj obj)]
+    (if (and (object? obj) (= (:type obj) :mobile) (@pcs (:vname obj)))
+      true false)))
+
+(defn npc?
+  "Returns true if obj is a npc, is in the world and has a :soul fun. (but isn't a PC)"
+  [obj]
+  (let [obj (to-obj obj)]
+    (if (and (object? obj) (= (:type obj) :mobile) (not (@pcs (:vname obj))) (fn? (:soul obj)))
+      true false)))
 
 (defn item?
   "Returns true if the obj is a item (and an object in the world)"
   [obj]
-  (and (object? obj) (= (:type obj) :item)))
+  (let [obj (to-obj obj)]
+    (if (and (object? obj) (= (:type obj) :item))
+      true false)))
 
 (defn room? 
   "Returns true if the obj is a room (and an object in the world.)"
   [obj]
-  (and (object? obj) (= (:type obj) :room)))
+  (let [obj (to-obj obj)]
+    (if (and (object? obj) (= (:type obj) :room))
+      true false)))
 
 
 (defn world-print 
@@ -144,14 +170,14 @@ pretty-prints an object in the world, or the hole world, with a print level of 8
   `(with-bindings {#'*print-level* 8}
      ~@args))
 
-(defn contents-set 
-  ([obj]
-     (contents-set obj #{}))
-  ([obj acc]
-     (let [obj (to-obj obj)]
-       (apply clojure.set/union (:contents obj) 
-              (for [cobj (:contents obj)]
-                (contents-set (to-obj cobj) acc))))))
+;; (defn raw-contents-set 
+;;   ([obj]
+;;      (raw-contents-set obj #{}))
+;;   ([obj acc]
+;;      (let [obj (to-obj obj)]
+;;        (apply clojure.set/union (:contents obj) 
+;;               (for [cobj (:contents obj)]
+;;                 (raw-contents-set (to-obj cobj) acc))))))
 
 
 
@@ -159,17 +185,19 @@ pretty-prints an object in the world, or the hole world, with a print level of 8
 
 (defn enter 
   "Enters a user (with a valid :character) into the world, called by user's socket managment function after login."
-  [user pc items]
+  [user items]
   (dosync
+   (assert (:character user))
+   (assert (:location @(:character user)))
+   (assert (@the-world (:location @(:character user))))
    (let [{ch :character} user
          new-loc (@the-world (:location @ch))]
- 
      (alter new-loc assoc  :contents (conj (:contents @new-loc) (:vname @ch)))
      (alter ch assoc :soul soul/pc-soul)
      (alter the-world assoc (:vname @ch) ch)
      (doseq [item items]
-       (alter the-world assoc (:vname @item) item))
-     (alter pcs conj ch)
+       (alter the-world assoc (:vname item) (ref item)))
+     (alter pcs conj (:vname  @ch))
      (commute pcs-to-users assoc (:vname @ch) user))))
 
 ;(hooks/def-hook pc-leave-world)
@@ -177,11 +205,11 @@ pretty-prints an object in the world, or the hole world, with a print level of 8
 (defn leave 
   "Removes the character cleany from the world, used by the user's connection managment function. 
 for normal dismissing of users call (disconnect user) or (disconnect (:user @ch))"
-  [user pc]
+  [user]
   (apply pc-file/save-pc 
    (dosync
     (let [{ch :character} user
-          items (map to-obj-ref (contents-set pc))
+          items (map to-obj-ref (:contents @ch))
           loc (@the-world (:location @ch))]
       
       (alter loc assoc :contents (disj (:contents @loc) (:vname @ch)))
@@ -189,8 +217,8 @@ for normal dismissing of users call (disconnect user) or (disconnect (:user @ch)
      (alter the-world dissoc  (:vname @ch))
      (doseq [item items]
        (alter the-world dissoc (:vname @item)))
-     (alter pcs disj ch)
+     (alter pcs disj (:vname @ch))
      (commute pcs-to-users dissoc (:vname @ch))
-     [(:account user) ch (map deref items)])))
+     [@(:account user) @ch (map deref items)])))
   user)
 
