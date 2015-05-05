@@ -1,4 +1,4 @@
-#+TODO: CODE TEST BUG | DONE 
+#+TODO: DESIGN CODE TEST BUG | DONE 
 
 * Basics foundation
 ** DONE server
@@ -82,10 +82,17 @@
     - [X] Take threads from a global thread hash ref
     - [X] catch and log thread exceptions
     - [X] log if tick fn execution takes longer then the tick sleep time.
+** CODE reset
+   creates or restores the starting state of a room.
+   list of vnames to init into a room when the mud starts and
+   (optionally) after a specific time, only if the item is no longer
+   present or if the mobile has died or been otherwise destroyed.
+   
+** CODE decay
+   Remove items that decay, such as corpses, from the ground.
+   
 
-     
-     
-
+   
 * Basic Commands
 ** Senses/Info
 *** DONE look
@@ -799,7 +806,7 @@ These commands will take your message and record it into a file as feedback
 to the mud implementors.
 
 * Spells
-OMG no mana, period
+No mana.
 ** magic mirror
 Syntax: cast 'magic mirror' <name>
    Lets you 'scry' into a room, seeing it as though you where looking based on a mobiles name, 
@@ -837,6 +844,7 @@ This skill enables you to climb into and out of rooms that require it.
 ** appraise
 When using value or apprase, returns the value your skill tells you its worth as well as the NPC's estimate.
 Also, value and apprase can be used outside of a shop, but just uses skill.
+
 ** aid
 Syntax: aid <character>
 
@@ -864,6 +872,7 @@ Corpse drops,
 you go to the relms of the dead.
 someone raises you, or 
 you can reincarnate (you suffer from death sickness, lo
+
 ** damage
 When one character attacks another, the severity of the damage is shown
 in the verb used in the damage message.  Damage messages vary depending
@@ -874,6 +883,7 @@ while those surrounded by * * indicate the highest levels.
  
 The message shown will reflect the actual damage you are inflicting on
 (or receiving from) your opponent, and not a specific fixed amount.
+
 ** resets
    Every time the world is loaded, and after a certain period of
    time, items in a rooms :reset set are cloned into the room, unless
@@ -900,7 +910,7 @@ Area resets are indicated by 'squeaking noises' or other messages just prior
 to the reset itself.
 
 ** MOTD
-   Message of the day! (that thing that pops up at login that no one ever sets
+   Message of the day! (that thing that pops up at login that no one ever sets)
 ** weapons
 Weapons are the primary source of fighting power for most classes,
 especially at lower levels where other skills and spells remain

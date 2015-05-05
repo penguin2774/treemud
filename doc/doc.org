@@ -97,9 +97,32 @@
     More advanced event handling will be implemented in the 'scripted'
     behavior for the scripting system.
     
+    Most actions in the world cause actions, so behaviors should only
+    react to specific events to avoid looping off each other.
+
 *** pending-actions vector
-    Pending actions are [functions & args] vectors that have side effects. They will be
-    called one by one by the NPC action thread. 
+    Pending actions are {:fn fn :mobile self :args args} calls that
+    always are always called (apply fn self args) that have side effects. They
+    will be called one by one by the NPC action thread.  
+
     Note: NPCs should not directly change any world values excluding
     there own. Instead they should use act functions like PC commands.
     Action functions are the NPC analogy to PC Commands.
+
+*** tick-npcs
+    All npc will receive a :tick event every second by the npc-tick
+    function. 
+    Cause will be equal to self.
+    This is for any actions the npc will take over time without
+    interaction with PCs.
+    
+** tick
+   
+*** master-tick
+    The master-tick thread calls all the tick functions in  tick-fns
+    at there specified time. Tick functions are added to the system
+    with def-tick which defines a tick function by a namespace
+    qualified symbol and number of ticks in between calls. Default
+    tick time is 1000 milliseconds.
+    This is used for tick-npcs and any other system that requires the
+    notice of passing time.
