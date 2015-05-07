@@ -1,4 +1,4 @@
-#+TODO: DESIGN CODE TEST BUG | DONE 
+#+TODO: CODE TEST BUG | DONE 
 
 * Basics foundation
 ** DONE server
@@ -12,7 +12,11 @@
 ** DONE account
    Contains the account managment menu as well as all the account
    creation and managment functions.
-*** BUG PC file is being randomly blanked when server is closed while PC is in play
+*** BUG PC file is being randomly blanked, reason unknown.
+**** Occurrence log
+
+     - [2015-05-05 Tue 22:06] 
+       Logs lost when changing branches
 ** DONE utils
    Holds all the utility files such as color
 ** DONE command
@@ -33,10 +37,32 @@
 ** DONE world
    Contains the functions for world manipulation as well as loading
    area files. It also contains the centeral world hash.
-*** DONE world.init
+*** world.init [100%]
 **** DONE initializer functions
 **** DONE Getting error when creating new PC
      Issue with init-pc and save-pc using refrences
+*** world.reset [0%] 
+    creates or restores the starting state of a room.
+    list of vnames to init into a room when the mud starts and
+    (optionally) after a specific time, only if the item is no longer
+    present or if the mobile has died or been otherwise destroyed.
+
+[{:object 'creature.orc
+  :count 5 
+  :modifiers {:contents #{'evil.wand}
+              :gold 100
+              :equipment {:head 'generic.leather.helmet
+                          :chest 'generic.leather.chest
+                          :leggings 'generic.leather.leggings
+                          :feet 'generic.leather.feet
+                          :wield 'generic.iron.short-sword}}
+  }
+ {:object 'generic.chest
+  :count 1
+  :contents #{'treasure.small}}]
+ 
+
+**** CODE 
 ** DONE act
    Act(tions) are things that are done to the world by something or
    someone. Functions to cause actions are kept in this file.
@@ -82,12 +108,7 @@
     - [X] Take threads from a global thread hash ref
     - [X] catch and log thread exceptions
     - [X] log if tick fn execution takes longer then the tick sleep time.
-** CODE reset
-   creates or restores the starting state of a room.
-   list of vnames to init into a room when the mud starts and
-   (optionally) after a specific time, only if the item is no longer
-   present or if the mobile has died or been otherwise destroyed.
-   
+
 ** CODE decay
    Remove items that decay, such as corpses, from the ground.
    
