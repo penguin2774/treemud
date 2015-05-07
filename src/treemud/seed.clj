@@ -70,7 +70,7 @@ with PC's saved inventory, which are not considered"
 (defmacro def-seed [sname & fn-desc ]
   `(add-seed '~sname (fn ~sname ~@fn-desc)))
 
-(def-seed equip.sword.short-sword [{status :status}]
+(def-seed equip.sword.short-sword [{status :status location :location}]
   (let [vname (create-vname 'equip.sword.short-sword)
         status (or status (utils/choice :good :alright :terrible))
         status-strs {:good "well made"
@@ -80,29 +80,55 @@ with PC's saved inventory, which are not considered"
        :sname 'equip.sword.short-sword
        :type :item
        :name "a short sword"
+       :location location
        :short (format "a %s short sword" (status-strs status))
        :long (format "a %s short sword is left here." (status-strs status))}]))
 
+(def-seed useless.rock [{location :location}]
+  (let [vname (create-vname 'useless.rock)]
+    [{:vname vname
+      :sname 'useless.rock
+      :type :item
+      :location location
+      :name "rock"
+      :short "a small granite rock"
+      :long "a small granite rock is here."}]))
+
 (defn expand-seed-obj 
   ([obj]
-   (let [acc-atom (atom [])]
+   (let [acc-atom (atom [])
+         vname (:vname obj)]
+     (assert (symbol? vname) "Object was not generated properly.")
      (letfn [(seed-if-sname [obj]
                (cond (and (symbol? obj)
                           (:sname (meta obj)))
-                     (let [[new-obj & others :as all] (seed obj)]
+                     (let [[new-obj & others :as all] (seed obj {:location vname})]
                        (swap! acc-atom concat all)
                        (:vname new-obj))
                      (and (vector? obj)
-                          (= (count obj) 2)
                           (symbol? (first obj))
                           (:sname (meta (first obj))))
                      (let [[sname data] obj
-                           [new-obj & others :as all] (seed sname data) ]
+                           [new-obj & others :as all] (seed sname (merge data {:location vname})) ]
                        (swap! acc-atom concat all)
                        (:vname new-obj))
                      :else
                      obj))]
        (cons  (walkies/prewalk seed-if-sname obj ) @acc-atom)))))
+
+(def-seed equip.backpack [{location :location}]
+  (let [vname (create-vname 'equip.backpack)]
+    (expand-seed-obj {:vname vname
+                      :sname 'equip.backpack
+                      :type :item
+                      :location location
+                      :contents #{['^:sname useless.rock {} 1]
+                                  ['^:sname useless.rock {} 2]
+                                  ['^:sname useless.rock {} 3]
+                                  ['^:sname useless.rock {} 4]}
+                      :name "backpack"
+                      :short "a leather backpack"
+                      :long "a leather backpack is here."})))
 
 ;; (defn gen-objects [seed-name seed-obj]
 ;;   (let [vname (create-vname seed-name)
