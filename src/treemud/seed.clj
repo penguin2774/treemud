@@ -3,7 +3,8 @@
 (ns treemud.seed
   (:require [rielib.utils :as utils]
             [treemud.consts :as consts]
-            [clojure.walk :as walkies])
+            [clojure.walk :as walkies]
+            [contrib.except :as except])
 
   (:import [java.util UUID] ))
 
@@ -63,41 +64,29 @@ with PC's saved inventory, which are not considered"
   (dosync 
    (alter the-seeds assoc sname seed)))
 
-(defn seed [name & [arg]]
+(declare expand-seed-obj)
+
+(defn seed [name & [attribs settings]]
   (if-let [seed (@the-seeds name)]
-    (apply seed [(or arg {})])))
-
-(defmacro def-seed [sname & fn-desc ]
-  `(add-seed '~sname (fn ~sname ~@fn-desc)))
-
-(def-seed equip.sword.short-sword [{status :status location :location}]
-  (let [vname (create-vname 'equip.sword.short-sword)
-        status (or status (utils/choice :good :alright :terrible))
-        status-strs {:good "well made"
-                     :alright ""
-                     :terrible "awful"}]
-    [{:vname vname
-       :sname 'equip.sword.short-sword
-       :type :item
-       :name "a short sword"
-       :location location
-       :short (format "a %s short sword" (status-strs status))
-       :long (format "a %s short sword is left here." (status-strs status))}]))
-
-(def-seed useless.rock [{location :location}]
-  (let [vname (create-vname 'useless.rock)]
-    [{:vname vname
-      :sname 'useless.rock
-      :type :item
-      :location location
-      :name "rock"
-      :short "a small granite rock"
-      :long "a small granite rock is here."}]))
+    (let [[obj & subobjs] (apply seed [settings])
+          obj  (merge  (case (or  (:type obj) 
+                                  (except/throwf "%s seed produced object with no type." name))
+                         :item item-defaults
+                         :room room-defaults
+                         :npc npc-defaults
+                         :pc pc-defaults
+                         :mobile mobile-defaults
+                         (except/throwf "%s has unknown type %s" name (:type obj))) ; should use either npc or pc
+                       
+                       (assoc obj :vname (or (:vname obj)
+                                             (create-vname name))) attribs {:sname  name})]
+         (concat (expand-seed-obj obj) subobjs))))
 
 (defn expand-seed-obj 
   ([obj]
    (let [acc-atom (atom [])
-         vname (:vname obj)]
+         vname (:vname obj)
+         sname (:sname obj)]
      (assert (symbol? vname) "Object was not generated properly.")
      (letfn [(seed-if-sname [obj]
                (cond (and (symbol? obj)
@@ -108,45 +97,55 @@ with PC's saved inventory, which are not considered"
                      (and (vector? obj)
                           (symbol? (first obj))
                           (:sname (meta (first obj))))
-                     (let [[sname data] obj
-                           [new-obj & others :as all] (seed sname (merge data {:location vname})) ]
+                     (let [[sname attribs settings] obj
+                           [new-obj & others :as all] (seed sname (merge attribs {:location vname}) settings) ]
                        (swap! acc-atom concat all)
                        (:vname new-obj))
                      :else
                      obj))]
-       (cons  (walkies/prewalk seed-if-sname obj ) @acc-atom)))))
+       (cons  (assoc (walkies/prewalk seed-if-sname (dissoc obj :sname) )  :sname sname) @acc-atom)))))
 
-(def-seed equip.backpack [{location :location}]
-  (let [vname (create-vname 'equip.backpack)]
-    (expand-seed-obj {:vname vname
-                      :sname 'equip.backpack
-                      :type :item
-                      :location location
-                      :contents #{['^:sname useless.rock {} 1]
-                                  ['^:sname useless.rock {} 2]
-                                  ['^:sname useless.rock {} 3]
-                                  ['^:sname useless.rock {} 4]}
-                      :name "backpack"
-                      :short "a leather backpack"
-                      :long "a leather backpack is here."})))
+(defmacro def-seed [sname & fn-desc ]
+  `(add-seed '~(symbol (str *ns*) (str sname)) (fn ~sname ~@fn-desc)))
 
-;; (defn gen-objects [seed-name seed-obj]
-;;   (let [vname (create-vname seed-name)
-;;         [new-seed-obj other-new-objs] (expand-seed-obj seed-obj)]
-;;     {vname (merge {:vname vname
-;;                    :sname seed-name 
-;;                    } new-seed-obj )})
-;;   )
+(def-seed short-sword [{status :status }]
+  (let [status (or status (utils/choice :good :alright :terrible))
+        status-strs {:good "well made"
+                     :alright ""
+                     :terrible "awful"}]
+    [{ :sname 'equip.sword.short-sword
+       :type :item
+       :name "a short sword"
+       :short (format "a %s short sword" (status-strs status))
+       :long (format "a %s short sword is left here." (status-strs status))}]))
+
+(def-seed rock [_]
+  (let [vname (create-vname 'treemud.seed/rock)]
+    [{:vname vname
+      :sname 'useless.rock
+      :type :item
+      :name "rock"
+      :short "a small granite rock"
+      :long "a small granite rock is here."}]))
 
 
 
+(def-seed backpack [_]
+  [{ :type :item
+     :contents #{['^:sname treemud.seed/rock {} nil 1]
+                 ['^:sname treemud.seed/rock {} nil 2]
+                 ['^:sname treemud.seed/rock {} nil 3]
+                 ['^:sname treemud.seed/rock {} nil 4]}
+     :name "backpack"
+     :short "a leather backpack"
+     :long "a leather backpack is here."}])
 
-(def-seed humanoid.orc []
-  (let [vname (create-vname 'humanoid.orc)]
-    {vname {:vname vname
-            :sname 'humanoid.orc
-            :type :mobile
-            :name "an orc"
-            :short "A tall male orc"
-            :long "A tall male orc is here."
-            :equipment {:wield 'equip.sword.short-sword}}}))
+
+(def-seed orc [_]
+  [{:type :npc
+    :name "an orc"
+    :short "A tall male orc"
+    :long "A tall male orc is here."
+    :equipment {:wield '^:sname treemud.seed/short-sword
+               :back '^:sname treemud.seed/backpack}
+    }])

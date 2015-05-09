@@ -18,6 +18,8 @@
 	    [treemud.event.soul :as soul]
 	    [treemud.utils.hooks :as hooks]
             [treemud.account.file :as pc-file]
+            [treemud.seed :as seed]
+            [world.seed]
 	    clojure.pprint
             [clojure.tools.logging :as log]))
 
@@ -27,25 +29,11 @@
 (defn initiate-world
   "Loads all area files in the area directory and readies them for use in the mud."
   []
-  (let [library (loader/load-areas)
-	world (reduce (fn [new-world [vname obj]]
-			(assoc new-world vname (ref obj))) {} library)]
-    (reduce (fn [new-world [vname obj]]
-	      (dosync
-	       (condp = (:type @obj) 
-		 :room
-		 (ref-set (new-world vname)
-			  (init/init-room @obj new-world))
-		 :item
-		 (ref-set (new-world vname)
-			  (merge init/item-defaults @obj))
-		 :mobile
-		 (ref-set (new-world vname)
-			  (merge init/mobile-defaults @obj))
-		 (throwf IllegalArgumentException "Not a known type %s for object %s." (:type obj)
-			 (:vname @obj)))
-	       
-	       new-world)) world world)))
+  (let [
+	world (seed/seed 'world.seed/the-world-seed)]
+    (reduce (fn [new-world obj]
+              (assoc new-world (:vname obj) (ref obj))
+              ) {} world)))
 
 (defonce ^{:doc "The master world hash, all game objects are here.
 hashed by there vname."} the-world (ref (initiate-world)))

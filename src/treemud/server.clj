@@ -105,7 +105,7 @@ also does the connection, and login/out logging, and error logging for non-comma
                 (log/info  (format "Character login %s from %s" (:name @pc) addr))
                 (command/prompt user)
                 (finally
-                  (world/leave user)
+;                  (world/leave user)
                   (log/info  (format "Character logout of %s from %s" (:name @pc) addr))
 		)))))
         (finally 
