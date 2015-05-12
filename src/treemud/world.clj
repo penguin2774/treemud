@@ -19,7 +19,7 @@
 	    [treemud.utils.hooks :as hooks]
             [treemud.account.file :as pc-file]
             [treemud.seed :as seed]
-            [world.seed]
+            world.seed
 	    clojure.pprint
             [clojure.tools.logging :as log]))
 
@@ -41,6 +41,9 @@ hashed by there vname."} the-world (ref (initiate-world)))
 	   :private true} pcs (ref #{}))
 (defonce ^{:doc "A hash of all PC's mobile to there user hashes."
 	   :private true} pcs-to-users (ref {}))
+(defn pcs-logged-in []
+  @pcs)
+
 
 (defn lookup 
   "Returns the ref of x, x can be a vname or a object map"
