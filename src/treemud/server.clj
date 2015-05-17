@@ -87,7 +87,7 @@
   "This is the base user socket handling function. It welcomes, runs the nanny, account manager and finally the command prompt.
 also does the connection, and login/out logging, and error logging for non-command-prompt errors."
   [ins outs addr]
-  (log/info (str "User connected from " addr"."))
+  (log/info (str "User connected from " addr "."))
   (let [user {:in ins :out outs :thread (Thread/currentThread) :ansi-color? true}]
     (swap! users conj user)
     (welcome user)

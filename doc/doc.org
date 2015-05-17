@@ -33,27 +33,59 @@
    new connections from nanny to account and finaly to command as they
    get further access.
 ** world
-   Contains the functions for world manipulation as well as loading
-   area files. It also contains the centeral world hash.
+   Contains the functions for world manipulation as well as
+   initializing the-world map with the-world-seed. 
+   It also contains the centeral world hash.
+
+   treemud.world should only contain information providing functions.
+    such as "room?" as well as the functions for server to log users
+    into and out of the world (enter and leave)
    
 *** *the-world* hash
     Contains all rooms, mobiles and items in the world.
     Each object has a unique vname that it is referenced by in any
     other location, such as :contents sets.
-    At startup the mud loads all the area files in 'areas/'.
-    The rooms are used immediately, where items and mobiles are
-    intended to be used for cloning via resets. 
     
+    On startup initalize-world seeds world.seed/the-world-seed
+    and uses it's resulting map as its value. 
+
     When players load there PCs, the file contains any items the
     player wishes to persist between mud reboots. This includes their
     inventory. 
+
+    the-world is simply a hash map of vnames and object refrences.
+    Manipulation of it should be left to world.change functions.
+
+** seed
+   Contains functions needed to define seeds in the-seeds map as well
+   as the seed function to initialize objects from them.
+
+*** The seed system
+    Seeds are simply functions that take a single argument (a map) and
+    return an object map.
+
+    The seed function does most of the work. 
+    - It makes sure that if no vname is given a sname#UUID style one
+      is generated.
+    - It merges the "attrib" map over the result's values
+    - It replaces ^:sname-ed symbols with seeded objects
+      and adds those objects and any objects they generated to the seq result.
+      Makes sure they have the correct refrences to there parent
+      (such as :location for objects in the root object's :contents)
+    - :sname is assigned to object
     
-    Its very important that vnames do not collied as the world is
-    simply a clojure hashmap and any collisions will cause items to
-    replace other items existing in the world. 
-    For example, if a item is instanced :peaceful.acorn#1132 and a
-    player already had :peaceful.acorn#1132 then when they load after 
-    
+    This allows for, and encourages seeds to produce sub objects from
+    other seeds. Thus allowing lots of re-usability in objects and
+    ease of building.
+
+    The system is intended to have objects that act as center points
+    that larger object systems are generated from. Such as "area"
+    rooms form which all other rooms in the "area" are generated.
+
+    the-world-seed is an example of this.
+
+     
+     
 ** nanny
    Contains the login prompt and banner. also the account making functions.
 ** account

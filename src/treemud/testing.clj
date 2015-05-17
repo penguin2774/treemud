@@ -22,3 +22,10 @@
      (merge @world/the-world new-world)
      (doseq [pc pcs]
        (change/location pc (or (:location @pc) consts/default-room))))))
+
+(defmacro safe-obj-print
+  "Usefull for printing references without infinitely recursing on there references"
+  [& args]
+
+  `(with-bindings {#'*print-level* 8}
+     ~@args))

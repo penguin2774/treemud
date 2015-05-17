@@ -154,13 +154,6 @@ pretty-prints an object in the world, or the hole world, with a print level of 8
 
 
 
-(defmacro safe-obj-print
-  "Usefull for printing references without infinitely recursing on there references"
-  [& args]
-
-  `(with-bindings {#'*print-level* 8}
-     ~@args))
-
 ;; (defn raw-contents-set 
 ;;   ([obj]
 ;;      (raw-contents-set obj #{}))

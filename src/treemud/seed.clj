@@ -19,8 +19,7 @@
   (:import [java.util UUID]))
 
 (defn- create-vname
-    "Gets the next unused number, this could be a problem when dealing
-with PC's saved inventory, which are not considered"
+    "Creates a symbol with the namespace and name of sname#UUID where UUID is java's UUID string."
     ([sname]
        (symbol (str (name sname) "#" (UUID/randomUUID)))))
 
@@ -81,8 +80,8 @@ For most uses you'll want to def-seed instead."
 (declare expand-seed-obj)
 
 (defn seed 
-  "Pruduces a new object(s) with the result of the named seed function, as well as any objects inside of it (with meta data sname true). Returns all objects in a seq.
-settings is a map passed to the seed function.
+  "Pruduces a new object(s) with the result of the named seed function, as well as any objects inside of it (with meta data sname true) or otherwise associated with it (depending on the seed's code). Returns all objects in a seq.
+settings is a map that is passed to the seed function.
 attribs is a map that overwrites valuse in the objects produced by seed function.
 "
   [name & [settings attribs]]
@@ -143,12 +142,13 @@ attribs is a map that overwrites valuse in the objects produced by seed function
   "Defines a new seed and adds it to the-seeds.
 Seeds need to be functions that return a single map of the object.
 The object can contain symbols that have there :sname metadata filled in with either
-true, :contains or exit (currently) these will cause the named seed to be added to the result of a seed call. :contains will set the subobject's :location to the vname for the generating object. :exit will not set anything on the subobject (for room exits that generate more rooms.).
+true, :contains or :exit (currently). These will cause the named seed to be added to the result of a seed call. ^{:sname :contains} or simply ^:sname will set the subobject's :location to the vname for the generating object. ^{:sname :exit} will not set anything on the subobject (for room exits that generate more rooms.).
 a doc string can be provided as with (defn).
 A variable will be defiled with the same name as the sname. It will be set to the sname.
-So  (def-seed sword ...) (seed sword) will work.
-"
+So  (def-seed sword ...) (seed sword) will work."
+
   [sname & fn-desc ]
+
   (let [sname-wdoc (with-meta (symbol (str *ns*) (str sname))
                      {:doc 
                       (if (string? (first fn-desc))
@@ -160,44 +160,3 @@ So  (def-seed sword ...) (seed sword) will work.
                                  fn-desc))))))
 
 
-(def-seed short-sword "A simple short sword
-Args: status is :good :alright :terrible which sets quality"
-  [{status :status }]
-  
-  (let [status (or status (utils/choice :good :alright :terrible))
-        status-strs {:good "a well made"
-                     :alright "a"
-                     :terrible "an awful"}]
-    { :sname 'equip.sword.short-sword
-     :type :item
-     :name "short sword"
-     :short (format "%s short sword" (status-strs status))
-     :long (format "%s short sword is left here." (status-strs status))}))
-
-(def-seed rock [_]
-  {:type :item
-   :name "rock"
-   :short "a small granite rock"
-   :long "a small granite rock is here."})
-
-
-
-(def-seed backpack [_]
-  { :type :item
-   :contents #{['^:sname treemud.seed/rock {} nil 1]
-               ['^:sname treemud.seed/rock {} nil 2]
-               ['^:sname treemud.seed/rock {} nil 3]
-               ['^:sname treemud.seed/rock {} nil 4]}
-   :name "backpack"
-   :short "a leather backpack"
-   :long "a leather backpack is here."})
-
-
-(def-seed orc [_]
-  {:type :npc
-   :name "orc"
-   :short "a tall male orc"
-   :long "A tall male orc is here."
-   :equipment {:wield '^:sname treemud.seed/short-sword
-               :back '^:sname treemud.seed/backpack}
-   })
