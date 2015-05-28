@@ -21,8 +21,7 @@
 ;; For programmatic object instancing.
 
 (ns treemud.seed
-  (:require [rielib.utils :as utils]
-            [treemud.consts :as consts]
+  (:require [treemud.consts :as consts]
             [clojure.walk :as walkies]
             [contrib.except :as except])
 

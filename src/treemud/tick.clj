@@ -20,7 +20,7 @@
 
 
 (ns treemud.tick
-  (:require [rielib.utils :as utils]
+  (:require [treemud.utils :as utils]
             [clojure.tools.logging :as log]))
 
 (def ^{:private true} master-tick-running (atom false))

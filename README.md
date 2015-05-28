@@ -1,36 +1,31 @@
 # treemud
 
-FIXME: description
+A multi-threaded mud server written in clojure with a diku style commands.
 
 ## Installation
 
-Download from http://example.com/FIXME.
+Expand into its host directory. Should work from there.
+
 
 ## Usage
 
-FIXME: explanation
+Recommended to be launched with a repl for debugging and administration.
 
-    $ java -jar treemud-0.1.0-standalone.jar [args]
+~/treemud $ lein repl
 
-## Options
+Then
 
-FIXME: listing of options this app accepts.
+treemud.core=> (launch-server)
 
-## Examples
+Will open up on port 13579 by default.
 
-...
+I personaly use cider as I have an emacs obsession. But anything that can work with
+a lein repl and/or nREPL should work fine.
 
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2015 Nathanael Cunningham
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.

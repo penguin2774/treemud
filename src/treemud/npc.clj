@@ -21,7 +21,7 @@
 
 (ns treemud.npc
   (:require [clojure.tools.logging :as log]
-            [rielib.utils :as utils]
+            [treemud.utils :as utils]
             [contrib.except :as except]
             [treemud.world :as world]
             [treemud.world.init :as init]

@@ -21,7 +21,7 @@
 
 (ns treemud.core
   (:gen-class)
-  (:require rielib.utils
+  (:require treemud.utils
             treemud.server
             treemud.npc
             treemud.tick
@@ -31,7 +31,7 @@
 
 (defn launch-server []
   (log/info "Launching server thread.")
-  (rielib.utils/launch-thread treemud.server/main)
+  (treemud.utils/launch-thread treemud.server/main)
   (log/info "Launching npc thread.")
   (treemud.npc/launch-npc-process-actions-thread)
   (log/info "Launching tick thread.")

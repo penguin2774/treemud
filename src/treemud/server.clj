@@ -25,7 +25,7 @@
 
 (ns treemud.server
   (:use treemud.server.comm)
-  (:require [rielib.utils :as utils]
+  (:require [treemud.utils :as utils]
 	    [clojure.tools.logging :as log]
             treemud.account.file
 	    [treemud 

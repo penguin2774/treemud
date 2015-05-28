@@ -21,7 +21,7 @@
 ;; Password hashing and checking functions.
 
 (ns treemud.utils.passwd
-  (:use [rielib.utils :only [digest-message]]))
+  (:use [treemud.utils :only [digest-message]]))
 
 
 
