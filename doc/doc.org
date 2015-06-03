@@ -85,7 +85,6 @@
     the-world-seed is an example of this.
 
      
-     
 ** nanny
    Contains the login prompt and banner. also the account making functions.
 ** account

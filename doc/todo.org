@@ -118,9 +118,8 @@
 ** Senses/Info
 *** DONE look
 *** DONE look <object>
-*** BUG exit descriptions are not spaced out
-
-*** CODE look in <object>/examin <object>
+*** DONE exit descriptions are not spaced out
+*** DONE look in <object>/examin <object>
 *** CODE look <direction>
 lets you look down a hallway ext.
 shows mobiles in a direction up to 4 rooms away

@@ -39,6 +39,7 @@
        :contents (if (and  (= (quot max-x 2) x)
                            (= (quot max-y 2) y))
                    #{'^:sname world.peaceful/oak-tree
+                     '^:sname world.peaceful/hollow-stump
                      '^:sname world.peaceful/acorn}
                    #{})
        :exits (merge  (if (and  es (= y 0)) {"north" es} {})
@@ -65,12 +66,15 @@
    :immovable true
    :long "A tall oak tree stands here."})
 
-;; {:type :item
-;;   :vname peaceful.hollow-stump
-;;   :name "hollow stump"
-;;   :short "a hollow stump"
-;;   :long "An old hollow stump rests here."
-;;   :contents #{}}
+
+(def-seed hollow-stump [_]
+  {:type :item
+   :name "hollow stump"
+   :short "a hollow stump"
+   :long "An old hollow stump rests here."
+   :immovable true
+   :contents #{'^:sname world.peaceful/acorn}})
+
 (def-seed area [{es :entrance-south}]
   {:type :room
    :vname 'world.peaceful/sky

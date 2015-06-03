@@ -38,8 +38,9 @@ Looks around the room, or at an object."
      (act/look @(:character user)))
   ([user cmd obj]
      (let [ch @(:character user)]
-     (if-let [obj (object/find-in (:location ch) obj ch)]
-       (act/look ch obj)
+       (if-let [obj (or  (object/find-in (:location ch) obj ch)
+                         (object/find-in ch obj ch))]
+         (act/look ch obj)
        (comm/sendln user "You can't find '%s' anywhere." obj)))))
 
 (event/def-event-handler :look-around [obj cause]
@@ -72,16 +73,15 @@ Looks around the room, or at an object."
 (event/def-event-handler :look-at [ch cause target]
   (event/tellln
    (dosync
-    (let [ch ch]
-      (str (color/color-str :yellow
-			    (object/name target ch))
-	   "\n\r"
-	   (color/color-str :grey
-			    (:long target))
-	   "\n\r"
-	   (color/color-str :blue
-			    (str "Wearing: N/A"))
-	   "\n\r"))))
+    (str (color/color-str :yellow
+                          (object/name target ch))
+         "\n\r"
+         (color/color-str :grey
+                          (:long target))
+         "\n\r"
+         (color/color-str :blue
+                          (str "Wearing: N/A"))
+         "\n\r")))
   (event/tellln (str (object/name cause ch)
 		     " looks at " (if (= ch target)
 				    "you"
@@ -91,3 +91,40 @@ Looks around the room, or at an object."
 
 (def-command do-look "look")
 (def-command do-look "look" :object)
+
+(defn do-look-in 
+  ([user cmd _ obj]
+   (do-look-in user cmd obj))
+  ([user cmd obj]
+   (let [ch @(:character user)]
+     (if-let [obj (object/find-in (:location ch) obj ch)]
+       (cond 
+         (and  (world/item? obj) (object/container? obj))
+         (act/look-in ch obj)
+         true
+         (comm/sendln user "That's not a container.\n\r"))
+       (comm/sendln user "You can't find '%s' anywhere.\n\r" obj)))))
+
+
+(event/def-event-handler :look-in [ch cause target]
+  (event/tellln
+   (dosync 
+    (str (color/color-str :yellow 
+                          "Contents:")
+         "\n\r  "
+         (if (empty?  (:contents target))
+           (color/color-str :brown "Nothing.")
+           (apply str 
+                  (interpose "\n\r  " (map (fn [obj]
+                                             (color/color-str :grey
+                                                              (object/short obj ch))) (:contents target)))))
+         "\n\r")))
+  (event/tellln
+   (str (object/name cause ch)
+        " rummages through " (if (= ch target)
+                               (object/his-her cause ch)
+                               (object/short target ch)) ".")))
+
+
+(def-command do-look-in "look" "in" :object)
+(def-command do-look-in "examin" :object)

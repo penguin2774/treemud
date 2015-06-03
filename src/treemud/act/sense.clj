@@ -33,11 +33,21 @@ Success:
   [ch obj]
   (act loc :look-at ch obj)"
   ([ch]
-     (throw-if-not (world/mobile? ch) IllegalArgumentException "ch must be a mobile.")
-     (let [loc (world/to-obj (:location ch))]
-       (event/act loc :look-around ch)))
+   (throw-if-not (world/mobile? ch) IllegalArgumentException "ch must be a mobile.")
+   (let [loc (world/to-obj (:location ch))]
+     (event/act loc :look-around ch)))
   ([ch obj]
-     (throw-if-not (world/mobile? ch) IllegalArgumentException "ch must be a mobile.")
-     (throw-if-not (world/object? ch) IllegalArgumentException "obj must be an object.")
-     (event/act (:location ch) :look-at ch obj)))
-       
+   (throw-if-not (world/mobile? ch) IllegalArgumentException "ch must be a mobile.")
+   (throw-if-not (world/object? ch) IllegalArgumentException "obj must be an object.")
+   (event/act (:location ch) :look-at ch obj)))
+
+(defn look-in
+  "Triggers the look-in event.
+Success:
+  [ch obj]
+  (act loc :look-in ch obj)"
+  ([ch obj]
+   (throw-if-not (world/mobile? ch) IllegalArgumentException "ch must be a mobile.")
+   (throw-if-not (world/object? ch) IllegalArgumentException "obj must be an object.")
+   (event/act (:location ch) :look-in ch obj)))
+
