@@ -182,7 +182,7 @@ You cannot drag a character into a death trap, or if either you or they
 are under attack.
  
 ** Object manipulation
-*** CODE get/put/drop/give [60%]
+*** CODE get/put/drop/give [80%]
 Help level: 0
 Syntax:  drop <object>
          drop <amount>  coins
@@ -206,7 +206,7 @@ PUT puts an object into a container.
 Use 'drop/get/put all' to reference all objects present.
 Use 'drop/get/put all.<object>' to reference all objects of the same name.
 **** DONE get 'object'
-**** CODE get 'object' 'object'
+**** DONE get 'object' 'object'
 **** DONE drop
 **** TEST put
 ***** DONE putting objects in container near player

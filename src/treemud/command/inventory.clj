@@ -26,17 +26,32 @@
 	      [treemud.server.comm :as comm]
 	      [treemud.utils.color :as color]
 	      [treemud.act.inventory :as act]
-	      [treemud.world.object :as object]))
+	      [treemud.world.object :as object]
+              [treemud.world :as world]))
 
 
 
 
-(defn do-get [user cmd word]
-  (let [ch @(:character user)
-	obj (object/find-in (:location ch) word ch)]
-    (if obj
-      (act/get ch obj)
-      (comm/sendln user "You can't find '%s' anywhere." word))))
+(defn do-get 
+  ([user cmd word]
+   (let [ch @(:character user)
+         obj (object/find-in (:location ch) word ch)]
+     (if obj
+       (act/get ch obj)
+       (comm/sendln user "You can't find '%s' anywhere." word))))
+
+  ([user cmd word1 word2]
+   (let [ch @(:character user)
+         from (or (object/find-in (:location ch) word2 ch)
+                 (object/find-in ch word2 ch))
+         obj (object/find-in from  word1 ch)]
+     (cond 
+       (or (not from) (not (world/item? from)))
+       (comm/sendln user "You can't find '%s' anywhere." word2)
+       (or (not obj) (not (world/item? obj)))
+       (comm/sendln user "You don't see '%s' in %s." word1 (object/short from ch))
+       :else
+       (act/get ch obj from)))))
 
 (defn do-drop [user cmd word]
   (let [ch @(:character user)
@@ -51,12 +66,12 @@
 	victim (object/find-in (:location ch) target ch)
 	obj (object/find-in ch nobj ch)]
     (cond 
-     (not victim)
-     (comm/sendln user "You don't see '%s' here." target)
-     (not obj)
-     (comm/sendln user "You don't have '%s'." nobj)
-     true
-     (act/give ch obj victim))))
+      (or (not victim) (not (world/mobile? victim)))
+      (comm/sendln user "You don't see '%s' here." target)
+      (not obj)
+      (comm/sendln user "You don't have '%s'." nobj)
+      true
+      (act/give ch obj victim))))
 
 (defn do-put [user cmd nobj target]
   (let [ch @(:character user)
@@ -64,20 +79,21 @@
               (object/find-in (:location ch) target ch))  ; Then there location
         obj (object/find-in ch nobj ch)]
     (cond 
-     (not dest)
-     (comm/sendln user "You can't find '%s'." target)
-     (not (object/container? dest))
-     (comm/sendln user "You can't put '%s' in '%s'." nobj target)
-     (not obj)
-     (comm/sendln user "You don't have '%s'." nobj)
-     true
-     (act/put ch obj dest))))
+      (or (not dest) (not (world/item? dest)))
+      (comm/sendln user "You can't find '%s'." target)
+      (not (object/container? dest))
+      (comm/sendln user "You can't put '%s' in '%s'." nobj target)
+      (not obj)
+      (comm/sendln user "You don't have '%s'." nobj)
+      true
+      (act/put ch obj dest))))
 
 (defn do-inventory [user ch]
   (let [ch @(:character user)]
     (act/examin ch)))
 
 (def-command do-get "get" :object)
+(def-command do-get "get" :object :object)
 (def-command do-drop "drop" :object)
 (def-command do-give "give" :object :object)
 (def-command do-put "put" :object :object)
@@ -89,6 +105,13 @@
   (event/tellln "You get %s." (object/short obj ch))
   (event/tellln "%s picks up %s." (object/name cause ch)
 		(object/short obj ch)))
+
+(event/def-event-handler :took-from [ch cause obj from]
+  (event/tellln "You get %s from %s." (object/short obj ch) (object/short from ch))
+  (event/tellln "%s picks up %s from %s." (object/name cause ch)
+		(object/short obj ch)
+                (object/short from ch)))
+
 
 (event/def-event-handler :dropped [ch cause obj]
   (event/tellln "You drop %s." (object/short obj ch))

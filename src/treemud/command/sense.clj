@@ -97,9 +97,10 @@ Looks around the room, or at an object."
    (do-look-in user cmd obj))
   ([user cmd obj]
    (let [ch @(:character user)]
-     (if-let [obj (object/find-in (:location ch) obj ch)]
+     (if-let [obj (or (object/find-in (:location ch) obj ch)
+                      (object/find-in ch obj ch))]
        (cond 
-         (and  (world/item? obj) (object/container? obj))
+         (and (world/item? obj) (object/container? obj))
          (act/look-in ch obj)
          true
          (comm/sendln user "That's not a container.\n\r"))

@@ -40,7 +40,8 @@
                            (= (quot max-y 2) y))
                    #{'^:sname world.peaceful/oak-tree
                      '^:sname world.peaceful/hollow-stump
-                     '^:sname world.peaceful/acorn}
+                     '^:sname world.peaceful/acorn
+                     '^:sname world.peaceful/nest}
                    #{})
        :exits (merge  (if (and  es (= y 0)) {"north" es} {})
                       (if (> x 0) {"west" (get-vname (- x 1) y)})
@@ -83,4 +84,15 @@
    :exits {:down 'world.peaceful/grassy-field}
    :subrooms #{['^:sname world.peaceful/grassy-field {:entrance-south es} {}]}})
 
+(def-seed egg [_]
+  {:type :item
+   :name "bird egg"
+   :short "a bird's egg"
+   :long "A tiny egg rests here."})
 
+(def-seed nest [_]
+  {:type :item
+   :name "bird nest"
+   :short "a bird's nest"
+   :long "A birds nest rests here."
+   :contents #{'^:sname world.peaceful/egg}})

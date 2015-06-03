@@ -27,16 +27,27 @@
 
 
 
-(defn get [ch obj]
-  (letfn [(move-obj! [ch obj]
-		    (dosync
-		     (if (= (:location @obj) (:location @ch))
-		       (do (change/location obj ch)
-			   [@ch @obj])
-		       (throwf RuntimeException "obj is not in the same place as ch"))))]
-    (let [[ch obj] (move-obj! (world/to-obj-ref ch)
-			      (world/to-obj-ref obj))]
-      (event/act (:location ch) :took ch obj))))
+(defn get 
+  "Moves object obj to ch inventory."
+  ([ch obj]
+   (letfn [(move-obj! [ch obj]
+             (dosync
+              (if (= (:location @obj) (:location @ch))
+                (do (change/location obj ch)
+                    [@ch @obj])
+                (throwf RuntimeException "obj is not in the same place as ch"))))]
+     (let [[ch obj] (move-obj! (world/to-obj-ref ch)
+                               (world/to-obj-ref obj))]
+       (event/act (:location ch) :took ch obj))))
+  ([ch obj from]
+   (letfn [(move-obj! [ch obj from]
+             (dosync
+              (do (change/location obj ch)
+                  [@ch @obj @from])))]
+     (let [[ch obj from] (move-obj! (world/to-obj-ref ch)
+                                    (world/to-obj-ref obj)
+                                    (world/to-obj-ref from))]
+       (event/act (:location ch) :took-from ch obj from)))))
 
 
 
