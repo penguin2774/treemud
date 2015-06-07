@@ -92,13 +92,40 @@
   (let [ch @(:character user)]
     (act/examin ch)))
 
+
+(defn do-empty 
+  ([user ch target]
+   (do-empty user ch target nil))
+  ([user ch from to]
+   (let [ch @(:character user)
+         obj-from (or (object/find-in ch from ch))
+         obj-to   (if to
+                    (or (object/find-in ch to ch)
+                        (object/find-in (:location ch) to ch))
+                    (:location ch))]
+     (cond 
+       (not obj-from)
+       (comm/sendln user "You don't have '%s'.\n\r" from)
+       (not obj-to)
+       (comm/sendln user "You don't see '%s' anywhere.\n\r" to)
+       (= obj-from obj-to)
+       (comm/sendln user "You can't empty something into itself!\n\r")
+       (or (not  (object/container? obj-to))
+           (not (object/container? obj-from)))
+       (comm/sendln user "That's not a container.\n\r")
+       
+       :else
+       (act/empty ch obj-from obj-to)))))
+
+
 (def-command do-get "get" :object)
 (def-command do-get "get" :object :object)
 (def-command do-drop "drop" :object)
 (def-command do-give "give" :object :object)
 (def-command do-put "put" :object :object)
 (def-command do-inventory "inventory")
-
+(def-command do-empty "empty" :object)
+(def-command do-empty "empty" :object :object)
 
 
 (event/def-event-handler :took [ch cause obj]
@@ -139,11 +166,24 @@
   (event/tellln 
    (str
     (color/color-str :red :bold "Inventory:\n\r")
-    (color/color-str :yello :bold
+    (color/color-str :yellow :bold
 		     (apply str 
 			    (interpose "\n\r" (map #(object/short % ch)
 						   (:contents ch)))))
     "\n\r"))
   nil)
     
-    
+
+(event/def-event-handler :emptied [ch cause from to]
+  (event/tellln
+   (str 
+    (color/color-str :yellow 
+                     "You empty out the contents of " (object/short from ch)
+                     ". \n\r")))
+  (event/tellln 
+   (str
+    (color/color-str :yellow
+                     (object/name cause ch) 
+                     " dumps out the contents of " 
+                     (object/short from ch)
+                     ".\n\r"))))    

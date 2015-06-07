@@ -182,7 +182,7 @@ You cannot drag a character into a death trap, or if either you or they
 are under attack.
  
 ** Object manipulation
-*** CODE get/put/drop/give [80%]
+*** DONE get/put/drop/give [100%]
 Help level: 0
 Syntax:  drop <object>
          drop <amount>  coins
@@ -208,11 +208,11 @@ Use 'drop/get/put all.<object>' to reference all objects of the same name.
 **** DONE get 'object'
 **** DONE get 'object' 'object'
 **** DONE drop
-**** TEST put
+**** DONE put
 ***** DONE putting objects in container near player
-***** TEST Putting objects in container in player's inventory
+***** DONE Putting objects in container in player's inventory
 **** DONE give
-*** CODE empty
+*** DONE empty
 Syntax:  empty <container>
 Syntax:  empty <container> <container>
  
@@ -222,29 +222,6 @@ Use 'empty <container>' to dump the contents to the ground.
  
 Use 'empty <container> <container>' will empty the contents of the
 first container into the second container.
-*** CODE brandish/quaff/recite/zap
-Syntax:  brandish                       (to invoke a staff)
-Syntax:  quaff/drink  <potion>                (to quaff potions)
-         quaff/drink  <potion> <container>    (quaff directly from container)
-Syntax:  recite <scroll> <target>       (to recite a scroll)
-Syntax:  zap    <target>                (to use a wand on a target)
- 
-BRANDISH invokes a magical staff.
- 
-QUAFF quaffs a potion (as opposed to DRINK, which drinks mundane liquids).
- 
-RECITE recites a magical scroll; the <target> is optional, depending on the
-nature of the scroll.
- 
-ZAP fires a magical wand at a target.  If the target is not specified, and
-you are fighting someone, then that character is used for a target.
- 
-You must be holding a wand or a staff before using BRANDISH or ZAP.
- 
-All of these commands use up their objects:  Potions and scrolls have a
-single charge.  Wands and staves (staffs) have multiple charges.  When a
-magical object has no more charges, it will be consumed.  Use the spell
-'identify' to see the remaining charges.
  
 *** CODE eat/drink
 Syntax:  drink <object>                  (drink liquid from a drink container)
@@ -289,6 +266,29 @@ tobacco.
 Syntax:  sacrifice <object>
 
 Destroys object, and sends a message to imms (logged). 
+*** CODE brandish/quaff/recite/zap
+Syntax:  brandish                       (to invoke a staff)
+Syntax:  quaff/drink  <potion>                (to quaff potions)
+         quaff/drink  <potion> <container>    (quaff directly from container)
+Syntax:  recite <scroll> <target>       (to recite a scroll)
+Syntax:  zap    <target>                (to use a wand on a target)
+ 
+BRANDISH invokes a magical staff.
+ 
+QUAFF quaffs a potion (as opposed to DRINK, which drinks mundane liquids).
+ 
+RECITE recites a magical scroll; the <target> is optional, depending on the
+nature of the scroll.
+ 
+ZAP fires a magical wand at a target.  If the target is not specified, and
+you are fighting someone, then that character is used for a target.
+ 
+You must be holding a wand or a staff before using BRANDISH or ZAP.
+ 
+All of these commands use up their objects:  Potions and scrolls have a
+single charge.  Wands and staves (staffs) have multiple charges.  When a
+magical object has no more charges, it will be consumed.  Use the spell
+'identify' to see the remaining charges.
 
 ** Equipment/Inventory
 *** DONE Persistent player inventory

@@ -23,7 +23,8 @@
   (:use contrib.except)
   (:require [treemud.world :as world]
 	    [treemud.world.change :as change]
-	    [treemud.event :as event]))
+	    [treemud.event :as event]
+            [treemud.world.object :as object]))
 
 
 
@@ -91,7 +92,7 @@
               (and (not= (:location @ch) (:location @target))
                   (not (contains? (:contents @ch) (:vname @target))))
               (throwf RuntimeException "ch doesn't have or isn't near target")
-              true?
+              :else
                (do (change/location obj target)
                    [@ch @obj @target]))))]
     (let [[ch obj target] (move-obj! (world/to-obj-ref ch)
@@ -99,7 +100,31 @@
                                      (world/to-obj-ref target))]
       (event/act (:location ch) :placed ch obj target))))
                                                        
+(defn empty [ch from to]
+  (letfn [(move-obj! [ch from to]
+            (dosync
+             (cond
+              (not (:contents @from))
+              (throwf RuntimeException "from is not a container")
+              (not (:contents @to))
+              (throwf RuntimeException "to is not a container")
+              (not (or (= (:location @ch) (:location @from)) ;; next to each other
+                       (= (:vname @ch) (:location @from)))) ;; ch has from
+              (throwf RuntimeException "ch isn't near from %s %s" (:vname @ch) (:location @from) )
+              (not (or (= (:location @ch) (:location @to)) ;; next to each other
+                       (= (:vname @ch) (:location @to)) ;; ch has to
+                       (= (:location @ch) (:vname @to)))) ;; ch is in to
 
+              (throwf RuntimeException "ch isn't near to")
+              :else
+              (do (let [objs (object/contents from)]
+                    (doseq [obj objs]
+                      (change/location obj to))
+                    [@ch @from @to])))))]
+    (let [[ch obj target] (move-obj! (world/to-obj-ref ch)
+                                     (world/to-obj-ref from)
+                                     (world/to-obj-ref to))]
+      (event/act (:location ch) :emptied ch from to))))
 
 
 (defn examin [ch]
