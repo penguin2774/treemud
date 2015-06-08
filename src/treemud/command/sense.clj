@@ -89,10 +89,13 @@ Looks around the room, or at an object."
 			
 
 
-(def-command do-look "look")
-(def-command do-look "look" :object)
+(defn do-look-in
+  "
+Syntax: look in <object>
+        examin <object>
 
-(defn do-look-in 
+Shows the contents of a container.
+"
   ([user cmd _ obj]
    (do-look-in user cmd obj))
   ([user cmd obj]
@@ -105,6 +108,13 @@ Looks around the room, or at an object."
          true
          (comm/sendln user "That's not a container.\n\r"))
        (comm/sendln user "You can't find '%s' anywhere.\n\r" obj)))))
+
+(def-command do-look "look")
+(def-command do-look "look" :object)
+(def-command do-look-in "look" "in" :object)
+(def-command do-look-in "examin" :object)
+
+
 
 
 (event/def-event-handler :look-in [ch cause target]
@@ -127,5 +137,3 @@ Looks around the room, or at an object."
                                (object/short target ch)) ".")))
 
 
-(def-command do-look-in "look" "in" :object)
-(def-command do-look-in "examin" :object)

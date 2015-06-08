@@ -33,6 +33,11 @@
 
 
 (defn do-get 
+  "
+Syntax: get <object>
+        get <object> <object>
+  Picks up an object from the ground or gets an object from inside a container and 
+puts it in your inventory."
   ([user cmd word]
    (let [ch @(:character user)
          obj (object/find-in (:location ch) word ch)]
@@ -53,7 +58,12 @@
        :else
        (act/get ch obj from)))))
 
-(defn do-drop [user cmd word]
+(defn do-drop 
+  "
+Syntax: drop <object>
+  Drops an object from your inventory to the ground.
+"
+  [user cmd word]
   (let [ch @(:character user)
 	obj (object/find-in ch word ch)]
     (if obj
@@ -61,7 +71,12 @@
 		obj)
       (comm/sendln user "You don't seem to have '%s'." word))))
 
-(defn do-give [user cmd target nobj]
+(defn do-give 
+"
+Syntax: give <object> <character>
+  Gives an item in your inventory to another character.
+"
+  [user cmd target nobj]
   (let [ch @(:character user)
 	victim (object/find-in (:location ch) target ch)
 	obj (object/find-in ch nobj ch)]
@@ -73,7 +88,12 @@
       true
       (act/give ch obj victim))))
 
-(defn do-put [user cmd nobj target]
+(defn do-put
+"
+Syntax: put <item> <item>
+ Puts an item into another.
+"
+  [user cmd nobj target]
   (let [ch @(:character user)
         dest (or (object/find-in ch target ch) ; Try there inventory first
               (object/find-in (:location ch) target ch))  ; Then there location
@@ -88,12 +108,22 @@
       true
       (act/put ch obj dest))))
 
-(defn do-inventory [user ch]
+(defn do-inventory 
+"
+Syntax: inventory
+  Shows what you are currently 'carrying'.
+"
+  [user ch]
   (let [ch @(:character user)]
     (act/examin ch)))
 
 
-(defn do-empty 
+(defn do-empty
+  "
+Syntax: empty <item>
+        empty <item> <item>
+  Empties the contents of an container onto the ground or into another container.
+"
   ([user ch target]
    (do-empty user ch target nil))
   ([user ch from to]
