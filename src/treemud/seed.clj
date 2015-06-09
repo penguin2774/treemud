@@ -30,7 +30,7 @@
 (defn- create-vname
     "Creates a symbol with the namespace and name of sname#UUID where UUID is java's UUID string."
     ([sname]
-       (symbol (str (name sname) "#" (UUID/randomUUID)))))
+       (symbol (namespace sname) (str (name sname) "#" (UUID/randomUUID)))))
 
 
 (def room-defaults {:name "A generic room"
@@ -65,7 +65,9 @@
 		      :skills {:spot 4
 			       :profession-farming 4}
 		      :feats []
-		      :location consts/default-room})
+		      :location consts/default-room
+                      :hunger 0
+                      :thirst 0})
 
 (def npc-defaults (merge mobile-defaults
                         {}))
