@@ -1,4 +1,4 @@
-#+TODO: CODE TEST BUG | DONE 
+#+TODO: DESIGN CODE TEST BUG | DONE 
 
 * Basics foundation
 ** DONE server
@@ -246,6 +246,20 @@ your coordination will suffer and you may begin to either hallucinate or
 become depressed.  Eating, drinking and a little rest will solve this
 problem after a short period of time.
 
+**** DONE eat <object>
+     Items can have a key :food
+     :food {:calories 500 :effect namespace/effect-fn...}
+     eat destroys the object and increments calories by the amount
+     given if the object has :food data.
+
+**** DESIGN basic liquids system
+     
+
+**** CODE drink <object>
+
+**** CODE tick fn that causes hunger and thirst
+     
+     
 *** CODE fill
 Syntax:  fill <drincon>
 Syntax:  fill <container>
@@ -892,7 +906,9 @@ Corpse drops,
 you go to the relms of the dead.
 someone raises you, or 
 you can reincarnate (you suffer from death sickness, lo
-
+** hunger
+   over time the players :feed rating should reduce.
+   If it reaches 0, the character should receive a penalty or lose health
 ** damage
 When one character attacks another, the severity of the damage is shown
 in the verb used in the damage message.  Damage messages vary depending
