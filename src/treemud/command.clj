@@ -21,7 +21,7 @@
 
 (ns treemud.command
     (:require [treemud.command basic
-	       sense movement social inventory]
+	       sense movement social inventory consume]
 	      treemud.server.comm
 	      treemud.command.prompt))
 

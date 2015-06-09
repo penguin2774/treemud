@@ -88,7 +88,8 @@
   {:type :item
    :name "bird egg"
    :short "a bird's egg"
-   :long "A tiny egg rests here."})
+   :long "A tiny egg rests here."
+   :food {:calories 100}})
 
 (def-seed nest [_]
   {:type :item
