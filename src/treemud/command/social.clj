@@ -52,9 +52,10 @@ happen."
   [user cmd args]
   (act/emote @(:character user) [[object/noun-proper-capital :self :viewer] " " args]))
 
-(event/def-event-handler :emote [ch cause emotion]
-  (event/tellln (event/event-string-replace emotion ch cause))
-  (event/tellln (event/event-string-replace emotion ch cause)))
+(event/def-event-handler :emote [ch cause self-emotion others-emotion]
+  (event/tellln (event/event-string-replace self-emotion ch cause))
+  (event/tellln (event/event-string-replace (or others-emotion self-emotion) ch cause)))
+
 
 
 (def-command do-emote "emote" :rest)

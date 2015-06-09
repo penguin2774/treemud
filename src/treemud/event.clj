@@ -122,6 +122,7 @@ other: when the cause isn't the same as the pc being informed, this part is exec
 
 
 
+
 (defn event-string-replace 
   "Replaces keywords in the col in the form of :target.object-data-function.
   object data functions, such as object/name or object/him-her must be in the form:
@@ -143,9 +144,9 @@ other: when the cause isn't the same as the pc being informed, this part is exec
                                     (let [args-evaled (map (fn [target]
                                                              (cond 
                                                                (= target :viewer) viewer
-                                                               (= target  :self) cause
-                                                               (= target  :victim) (first victims)
-                                                               (= target  :other) (second victims)
+                                                               (= target :self) cause
+                                                               (= target :victim) (first victims)
+                                                               (= target :other) (second victims)
                                                                (re-matches #":victim([0-9]+)" (str target)) 
                                                                (nth victims 
                                                                     (Integer. 
@@ -154,7 +155,15 @@ other: when the cause isn't the same as the pc being informed, this part is exec
                                                                      (fn? (first target))) 
                                                                (eval-event-fun target)
                                                                true target)) args)]
-                                      (apply f args-evaled))) x)
+                                      (cond 
+                                        (fn? f)
+                                        (apply f args-evaled)
+                                        (keyword? f) ; keywords are for short hand tools in this context.
+                                        (case f 
+                                          :if-viewer 
+                                          (if (= viewer cause)
+                                            (first args-evaled)
+                                            (second args-evaled)))))) x)
                                  (map? x) nil ; maps are used for adding data for mobiles to understand string easier.
                                  true (str x)))
                              msg-col)))
@@ -165,55 +174,3 @@ other: when the cause isn't the same as the pc being informed, this part is exec
 
 
 
-;; A work in progress...
-;; (defn mud-str [ch objs & strs]
-;;   (let [objs (vec objs)
-;; 	he-she-it {:male "he"
-;; 		   :female "she"
-;; 		   :neuter "it"
-;; 		   nil "it"}
-;; 	him-her-it {:male "him"
-;; 		    :female "her"
-;; 		    :neuter "it"
-;; 		    nil "it"}
-;; 	his-her-its {:male "his"
-;; 		     :female "her"
-;; 		     :neuter "its"
-;; 		     nil "its"}]
-	
-	
-;;   (apply str 
-;; 	 (loop [this (first strs) rest (next strs) result [] color? false]
-;; 	   (if this
-;; 	     (cond
-;; 	      (and (keyword? this) (= :ln this))
-;; 	      (recur (first rest) (next rest) (conj result "\n\r") color?)
-;; 	      (keyword? this)
-;; 	      (let [[color-codes rest] (split-with keyword? rest)]
-;; 		(recur (first rest) (next rest) (conj result (apply color/make-color-code this color-codes)) true))
-;; 	      (and (symbol? this) (re-matches #"\$\d*\w" (name this)))
-;; 	      (let [[_ num code] (re-matches #"\$(\d*)(\w)" (name this))
-;; 		    obj (if (empty? num) ch (nth objs (Integer. num)))]
-;; 		(let [cr (condp = (first code)
-;; 			   \n
-;; 			   (object/name obj ch)
-;; 			   \e
-;; 			   (he-she-it (object/sex obj ch))
-;; 			   \m 
-;; 			   (him-her-it (object/sex obj ch))
-;; 			   \s
-;; 			   (his-her-its (object/sex obj ch))
-;; 			   \p
-;; 			   (object/short obj ch)
-;; 			   (throwf IllegalArgumentException "There is no mud-str act code for %c" (first code)))]
-;; 		  (recur (first rest) (next rest) (conj result cr) color?)))
-;; 	      (string? this)
-;; 	      (recur (first rest) (next rest) (conj result this) color?)
-;; 	      true
-;; 	      (recur (first rest) (next rest) (conj result (str this)) color?))
-;; 	     (if color?
-;; 	       (conj result (color/make-color-code :reset))
-;; 	       result))))))
-
-;; (defn mud-tell [ch objs & strs]
-;;   (tellln (apply mud-str ch objs strs)))

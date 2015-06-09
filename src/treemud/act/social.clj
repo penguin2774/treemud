@@ -38,8 +38,10 @@ Success:
 Success:
   (act current-location :emote ch sentence)"
   ([ch speech]
-     (event/act (:location ch) :emote ch speech)))
-       
+     (event/act (:location ch) :emote ch speech nil))
+  ([ch self-speech others-speech]
+   (event/act (:location ch) :emote ch self-speech others-speech)))
+
 
 
 (defn emote-apon
