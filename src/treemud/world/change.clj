@@ -60,11 +60,15 @@ Must be called in a transaction, and any vnames refrenced in obj's contents or o
 (defn remove-obj 
   "Removes obj from the world. If obj has contents it dumps those contents into either its own location or 'void.trash"
   ([obj]
+   (let [obj (world/to-obj obj)]
      (alter world/the-world dissoc (:vname obj))
      (if (:contents obj)
        (let [dump-loc (or (:location obj) 'void.trash)]
          (doseq [cobj obj]
            (alter (@world/the-world cobj) assoc :location dump-loc)
-           (alter (@world/the-world dump-loc) assoc  :contents (conj (@(@world/the-world dump-loc) :contents) cobj)))))))
+           (alter (@world/the-world dump-loc) assoc  :contents (conj (@(@world/the-world dump-loc) :contents) cobj)))))
+     (if (:location obj)
+       (alter (world/to-obj-ref (:location obj)) update-in [:contents] disj (:vname obj))
+       obj))))
 
 
