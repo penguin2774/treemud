@@ -97,3 +97,12 @@
    :short "a bird's nest"
    :long "A birds nest rests here."
    :contents #{'^:sname world.peaceful/egg}})
+
+
+(def-seed mug [_]
+  {:type :item 
+   :name "clay mug"
+   :short "a small clay mug"
+   :long "A small clay mug sits here."
+   :liquid {:volume 400
+            :type :water}})

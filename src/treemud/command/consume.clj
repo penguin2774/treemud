@@ -43,11 +43,29 @@
       :else
       (act/eat ch obj))))
 
+(defn do-drink [user cmd word]
+  (let [ch @(:character user)
+        obj (object/find-in ch word ch)]
+    (cond 
+      (not obj)
+      (comm/sendln user "You don't have '%s'." word)
+      (not (:liquid obj))
+      (social/emote ch ["You lift " [object/short obj :viewer]  " up to your mouth and try to drink from it..."]
+                    [[object/noun-proper-capital :self :viewer] " lifts " [object/short obj :viewer]  " up to " :self.his-her " mouth and tries to drink from it..."])
+      (zero? (:volume (:liquid obj)))
+      (comm/sendln user "Sadly, %s is empty." (object/short obj ch))
+      :else
+      (act/drink ch obj))))
 
 
 (def-command do-eat "eat" :object)
-
+(def-command do-drink "drink" :object)
+(def-command do-drink "drink" "from" :object)
 
 (event/def-event-handler :ate [ch cause obj]
   (event/tellln "You eat %s." (object/short obj ch))
   (event/tellln "%s eats %s." (object/noun-proper-capital cause ch) (object/short obj ch)))
+
+(event/def-event-handler :drank [ch cause obj amount]
+  (event/tellln "You drink from %s" (object/short obj ch))
+  (event/tellln "%s drinks from %s" (object/noun-proper-capital cause ch) (object/short obj ch)))

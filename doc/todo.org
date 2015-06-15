@@ -252,10 +252,13 @@ problem after a short period of time.
      eat destroys the object and increments calories by the amount
      given if the object has :food data.
 
-**** DESIGN basic liquids system
-     
-
-**** CODE drink <object>
+**** DONE basic liquids system
+     (:liquid obj) presence means obj is a liquid containing object
+     Structure:
+     {:volume ml-volume in the container
+      :hydration amount on drink hydrates you
+      :effect affect drinking has on you. (need an effect system...)
+**** TEST drink <object>
 
 **** CODE tick fn that causes hunger and thirst
      

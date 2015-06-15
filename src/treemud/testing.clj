@@ -33,7 +33,8 @@
             [treemud.seed :as seed]
             [treemud.world.change :as change]
             [treemud.consts :as consts]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [treemud.seed :as seed]))
 
 
 
